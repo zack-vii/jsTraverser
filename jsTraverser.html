@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html>
+
+<!--
+/* 
+ * jsTraverser
+ * Copyright (C) 2017 Gianluca.Moro@unipd.it
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+-->
+
+<!-- Examples
+// http://localhost:8081/connect?ip=<ipAddress[:port]>
+// http://localhost:8081/eval?expr=<espressione>&idx=<l'idx della connessione da usare>
+// expr=2%2B3.14
+-->
+
+<head>
+  <!-- JQuery -->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+
+  <!-- fancytree: theme can be 'awesome', 'lion' -->
+  <link href="css/skin-lion/ui.fancytree.min.css" rel="stylesheet">
+  <script src="js/jquery.fancytree-all-deps.min.js"></script>
+
+  <!-- Grid -->
+  <link href="css/jsTravGrid.css" rel="stylesheet">
+
+  <!-- core -->
+  <script src="js/jsTravMiscFunc.js"></script>
+  <script src="js/jsTravStatus.js"></script>
+  <script src="js/jsTravConnection.js"></script>
+
+<script>
+
+let status = new Status();
+let connection = new Connection();
+
+function showMessage(str, type) {
+    var localStr = str;
+    switch (type) {
+        case "WAITING":
+            localStr = "WAITING: ";
+            document.getElementById('messageShow').style.backgroundColor = 'red';
+            break;
+        case "OK":
+            localStr = "READY: ";
+            document.getElementById('messageShow').style.backgroundColor = 'GreenYellow';
+        break;
+    }
+    localStr = localStr + str;
+    $("#messageShow").html(localStr);
+}
+
+function showDetails(str) {
+    $("#detailsShow").html(str);
+}
+
+function updateStatus() {
+    $("#serverIpMdsIpRestShow").text(status.serverIpMdsIpRest);
+    $("#serverIpMdsplusInput").val(status.serverIpMdsplus);
+    $("#expressionToEvaluateInput").val(status.expressionToEvaluate);
+    $("#evaluatedExpressionShow").text(status.evaluatedExpression);
+    $("#treeNameInput").val(status.treeName);
+    //$("#connectionIdShow").text(status.connectionId);
+    if (status.connectionId >= 0) {
+        //$("#connectionIdShow").text("CONNECTED");
+        $("#buttonConnect").text("CONNECTED");
+    } else {
+        //$("#connectionIdShow").text("NOT CONNECTED");
+        $("#buttonConnect").text("PRESS TO CONNECT");
+    }
+    //document.getElementById('connectionIdShowColor').style.backgroundColor = 
+    document.getElementById('buttonConnect').style.backgroundColor = 
+        (status.connectionId >= 0)?'GreenYellow':'red';
+    $('#tree').fancytree('option', 'source', status.currentTreeSource);
+}
+
+function connectInput(name) {
+    document.getElementById(name + "Input").onkeyup = function () {
+        //alert(name + "Input ONKEYUP");
+        status[name] = $("#" + name + "Input").val();
+    };
+}
+
+function completeNodeInfos(status, connection, data, what, cont) {
+//console.log("in completeNodeInfos, what is");
+//console.log(what);
+    if ( ! Array.isArray(what)) {  return cont(); }
+    if (what.length < 1) { return cont(); }
+
+    // get info and continue on remaining whats
+    var carWhat = what.shift();
+    // now, carWhat is car(what) and what is cdr(what)
+
+//console.log("completeNodeInfos IN");
+//console.log(data);
+
+    status.expressionToEvaluate = "_m = getnci(" + data + ", '" + carWhat + "')";
+    connection.evalExpr(status, function( resp ) {
+            //alert( "Data: " + resp );
+            status.evaluatedExpression = resp;
+//console.log("completeNodeInfos IN got resp for data");
+//console.log(data);
+//console.log(resp);
+		      
+            carWhat = carWhat.toLowerCase();
+//	    switch (carWhat) {
+//		case "fullpath":
+//		case "node_name":
+		    arrayOfNids  = convertArrayAsStrToArrayOfInt(data);
+//console.log(arrayOfNids);
+		    arrayOfNames = convertArrayAsStrToArrayOfStr(resp);
+		    if (arrayOfNids.length == arrayOfNames.length) {
+		        for (var i=0; i<arrayOfNames.length; i++) {
+		            status.updateNodeFromNid(status.currentTreeData, 
+							     arrayOfNids[i], 
+							     carWhat, arrayOfNames[i]);
+			}
+                        status.update();
+		    }
+//		    break;
+//	    }
+            completeNodeInfos(status, connection, data, what, cont);
+        });
+}
+
+
+function mergeData(s1, s2) {
+    if (s1 == "[]") return s2;
+    if (s2 == "[]") return s1;
+    return (s1.slice(0, -1) + "," + s2.slice(1));
+}
+
+function evaluateMultiExpr(infoskey, requests, retStr, callBackF) {
+    var carRequest = requests.shift();
+    status.expressionToEvaluate = carRequest;
+    connection.evalExpr(status, function( data ) {
+	status.evaluatedExpression = data;
+        var memb = status.convertArrayOfNidsStrToTreeData(data);
+        status.addToChildren(status.currentTreeData, infoskey, memb);
+	retStr = mergeData(retStr, data);
+	if (requests.length > 0) {
+            evaluateMultiExpr(infoskey, requests, retStr, callBackF);
+        } else {
+            callBackF(retStr);
+        }
+    });
+}
+
+function getInfoOfNid(status, nid, callBackF) {
+    var infoStr = "NO INFO FOR " + nid;
+    var infos = status.getNodeFromNid(status.currentTreeData, nid);
+
+    if (infos.number_of_children + infos.number_of_members > 0 && !infos.children) {
+	showMessage("Fetching subtree ... please wait", "WAITING");
+
+        var theRequests = [];
+        if (infos.number_of_members > 0) {
+            theRequests = [ "_m = getnci(getnci(" + infos.key + ", 'MEMBER_NIDS'), 'NID_NUMBER')" ];
+        }
+        if (infos.number_of_children > 0) {
+            theRequests.push("_m = getnci(getnci(" + infos.key + ", 'CHILDREN_NIDS'), 'NID_NUMBER')");
+        }
+
+        evaluateMultiExpr(infos.key, theRequests, "[]", function (dataStr) {
+            //console.log(dataStr);
+            completeNodeInfos(status, connection, dataStr, Status.treeLabelsReturningArray, function (x) { 
+                status.update();
+                showMessage("Subtree loaded.", "OK");
+            });
+        });
+    }
+
+    //console.log(infos);
+    if (infos) {
+	infoStr = "";
+	for (let [key, value] of Object.entries(infos)) {
+	    infoStr = infoStr + key + ": <b>" + value + "</b>,<br>";
+	}
+    }
+    callBackF(infoStr);
+}
+
+
+$(document).ready(function(){
+
+    $("#tree").fancytree({
+        extensions: ["edit", "filter"],
+        source: status.currentTreeSource,
+        click: function(event, data) { 
+            var isExpanded = ! data.node.expanded;  // switch status
+            //console.log("expand"); 
+            //console.log(isExpanded); 
+            status.updateNodeFromNid(status.currentTreeData, data.node.key, "isOpen", isExpanded);
+            //data.node.expanded = isExpanded;
+            status.update();
+        },
+        activate: function(event, data){
+          // A node was activated
+          var node = data.node;       // data.node.key; is the title
+          // console.log(status.currentTreeSource);
+
+          //console.log("ACTIVATE NODE");
+          status.updateNodeFromNid(status.currentTreeData, data.node.key, "isOpen", true);
+          data.node.expanded = true;
+
+          getInfoOfNid(status, data.node.key, function (infoStr) {
+              showDetails(infoStr);
+          });
+
+          // $("#echoActive").text(node.title);
+          
+//          var queryStr = "getnci(_m[" + node.key + "], 'record')";
+//
+//          infoQuery(queryStr, function (replyStr) {  
+//            console.log("my object: %o", myObj);
+//            alert("CLICK NODO K " + replyStr + "! " + " node.data=" + node.data);
+//
+//            // update the tree data
+//            // http://wwwendt.de/tech/fancytree/demo/sample-api.html
+//
+//            //treeAddChild(node.key, [ {"title": "Record " + replStr, "key": "777"}, ] );
+//
+//            // update the visualization
+//            currentTreeSource = currentTree;
+//            $('#tree').fancytree('option', 'source', currentTreeSource);
+//          });
+
+        },
+    });
+
+
+
+    status.addUpdateF(updateStatus);
+    status.update();
+
+    //
+    // configure inputs
+    //
+    connectInput("serverIpMdsplus");
+    connectInput("expressionToEvaluate");
+    connectInput("treeName");
+
+    //
+    // connect function
+    //
+    document.getElementById("buttonConnect").onclick = function () {
+        //alert("buttonConnect PRESSED");
+	showMessage("Opening connection ... please wait ...", "WAITING");	      
+        connection.openConnection(status, (function (x) {
+		      showMessage("Connection opened.", "OK");
+		      return x;}));
+    };
+
+    //
+    // evaluate function
+    //
+    document.getElementById("buttonEvaluate").onclick = function () {
+        // alert("Evaluate");
+        connection.evalExpr(status, function(data) {
+            //alert( "Data: " + data );
+            status.evaluatedExpression = data;
+        });
+    };
+
+    //
+    // treeOpen function
+    //
+    document.getElementById("buttonOpenTree").onclick = function () {      
+        // alert("Open tree");
+	showMessage("Opening tree ... please wait ...", "WAITING");	      
+        connection.openTree(status, (function (x) { showMessage("Tree opened.", "OK"); return x;}));
+    };
+
+    //
+    // get member nid numbers function
+    //
+    document.getElementById("buttonMemberNidsNumber").onclick = function () {
+        // alert("Member Nids Number");    
+
+        showMessage("Getting data ... please wait ...", "WAITING");
+        status.expressionToEvaluate = "_m = getnci(getnci(0, 'member_nids'), 'nid_number')";
+        connection.evalExpr(status, function( data ) {
+            //alert( "Data: " + data );
+            status.evaluatedExpression = data; // .substring(1, data.length-1).replace(/,/g, ", ");
+            status.currentTreeData = status.convertArrayOfNidsStrToTreeData(data);
+
+            // status.evaluatedExpression = data.substring(1, data.length-1).replace(/,/g, ", ");
+            // status.currentTreeSource = convertDataToCurrentTree(status.evaluatedExpression);
+
+            completeNodeInfos(status, connection, data, Status.treeLabelsReturningArray, function (x) {
+                //alert("Complete DONE!");
+		showMessage("Data fetched.", "OK");
+                return null;
+            });
+
+        });
+
+    };
+
+
+    //
+    // get member nid names function
+    //
+//    document.getElementById("buttonMemberNidsName").onclick = function () {
+//        // alert("Member Nids Name");
+//        status.expressionToEvaluate = "_m = getnci(getnci(0, 'member_nids'), 'node_name')";
+//        connection.evalExpr(status, function( data ) {
+//            //alert( "Data: " + data );
+//            status.evaluatedExpression = data.substring(1, data.length-1).replace(/,/g, ", ");
+//            status.currentTreeSource = convertDataToCurrentTree(status.evaluatedExpression);
+//      });
+//    };
+
+});
+
+</script>
+
+</head>
+
+<body>
+
+  <!-- https://gridbyexample.com/examples/example32/ -->
+
+  <div class="wrapper">
+    <div class="box item1header">
+      <center>
+        <h1>jsTraverser</h1>
+      </center>
+    </div>
+
+    <div class="box2tree item2tree">
+      <div id="messageShow" style="width: 500px; background-color: GreenYellow; border-color: black; border-width: 1px; border-style:solid;">READY:</div>
+
+      <div id="tree" 
+	   style="border-color: yellow; border-width: 5px; border-style:solid;"></div>
+    </div>
+
+          <div class="box item3status">
+      <h3><center>Status</center></h3>
+      
+        <div style="width: 250px; border-color: coral; border-width: 1px; border-style:solid;">
+        MDSIpRest: <div id="serverIpMdsIpRestShow" style="display: inline-block;"></div>
+        </div>
+        <div style="width: 250px; border-color: coral; border-width: 1px; border-style:solid;">
+          MDSplus: <input id="serverIpMdsplusInput" type="text" value=""> 
+
+          <!-- <div id="connectionIdShowColor" style="display: inline-block;"> -->
+            <button id="buttonConnect">CONNECT</button>
+            <!-- <div id="connectionIdShow" style="display: inline-block;"></div> -->
+          <!-- </div>  -->
+        </div>
+        <div style="width: 250px; border-color: coral; border-width: 1px; border-style:solid;">      
+          Tree name: <input id="treeNameInput" type="text" value=""> 
+          <button id="buttonOpenTree">Open Tree</button> 
+        </div>
+        <div style="width: 250px; border-color: coral; border-width: 1px; border-style:solid;">
+          <button id="buttonMemberNidsNumber">Get TREE data</button> 
+        </div>
+      
+        <hr>
+        <h3><center>Details</center></h3>
+          <div id="detailsShow"></div>
+
+    </div>
+
+    <div class="box2tree item5command">
+      <div style="border-color: coral; border-width: 5px; border-style:solid;">
+        For debugging purposes
+        <hr>
+        Set expression [a valid MDSplus expression]: 
+	<input id="expressionToEvaluateInput" type="text" value="" size="80"> 
+        <br>
+        <br>
+        <button id="buttonEvaluate">Evaluate expression</button> 
+        <br>
+        <br>
+        Result: <div id="evaluatedExpressionShow"></div></div>
+      </div>
+    </div> <!-- item5 end -->
+
+
+  </div>
+
+</body>
+</html>
