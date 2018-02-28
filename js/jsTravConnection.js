@@ -23,14 +23,14 @@ class Connection {
 
     internalQuery(status, queryStr, callBackF) {
 	//console.log("internalQuery: queryStr= " + "http://" + status.serverIpMdsIpRest + "/" + queryStr);
-        $.get("http://" + status.serverIpMdsIpRest + "/" + queryStr, callBackF);
+        //$.get("http://" + status.serverIpMdsIpRest + "/" + queryStr, callBackF);
 
-	//	var time1 = Date.now();
-	//console.log(time1);
-	//$.get("http://" + status.serverIpMdsIpRest + "/" + queryStr, function (x) {
-	//	    var time2 = Date.now();
-	//	    console.log(time2 - time1);
-	//	    callBackF(x);});
+		var time1 = Date.now();
+		//console.log("TIMING");
+	$.get("http://" + status.serverIpMdsIpRest + "/" + queryStr, function (x) {
+		    var time2 = Date.now();
+		    console.log(time2 - time1);
+		    return callBackF(x);});
 
     }
 
@@ -44,7 +44,7 @@ class Connection {
 	this.internalQuery(status, "connect?ip=" + status.serverIpMdsplus, function( data ) {
 	    // alert( "in openConnection: Data " + data );
 	    status.connectionId = parseInt(data);
-	    this.isOpen = true;
+	    //this.isOpen = true;
 	    callBackF(data);
         });
     }

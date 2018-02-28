@@ -35,8 +35,9 @@
   <link href="css/skin-lion/ui.fancytree.min.css" rel="stylesheet">
   <script src="js/jquery.fancytree-all-deps.min.js"></script>
 
-  <!-- Grid -->
-  <link href="css/jsTravGrid.css" rel="stylesheet">
+  <!-- split panes - https://nathancahill.github.io/Split.js/ -->  
+  <script src="js/split.min.js"></script>
+  <link rel="stylesheet" href="css/panesSplit.css">
 
   <!-- core -->
   <script src="js/jsTravMiscFunc.js"></script>
@@ -197,6 +198,12 @@ function getInfoOfNid(status, nid, callBackF) {
 
 $(document).ready(function(){
 
+    Split(['#a', '#b'], {
+      gutterSize: 10,
+      sizes: [66, 34],
+      cursor: 'col-resize'
+    });
+
     $("#tree").fancytree({
         extensions: ["edit", "filter"],
         source: status.currentTreeSource,
@@ -332,25 +339,34 @@ $(document).ready(function(){
 </head>
 
 <body>
+    <div id="a" class="split split-horizontal">
 
-  <!-- https://gridbyexample.com/examples/example32/ -->
-
-  <div class="wrapper">
-    <div class="box item1header">
       <center>
         <h1>jsTraverser</h1>
       </center>
-    </div>
 
-    <div class="box2tree item2tree">
-      <div id="messageShow" style="width: 500px; background-color: GreenYellow; border-color: black; border-width: 1px; border-style:solid;">READY:</div>
+      <div id="messageShow" style="width: 100%; background-color: GreenYellow; border-color: black; border-width: 1px; border-style:solid;">READY:</div>
 
       <div id="tree" 
 	   style="border-color: yellow; border-width: 5px; border-style:solid;"></div>
+
+      <div style="border-color: coral; border-width: 5px; border-style:solid;">
+        For debugging purposes
+        <hr>
+        Set expression [a valid MDSplus expression]: 
+	<input id="expressionToEvaluateInput" type="text" value="" size="80"> 
+        <br>
+        <br>
+        <button id="buttonEvaluate">Evaluate expression</button> 
+        <br>
+        <br>
+        Result: <div id="evaluatedExpressionShow"></div></div>
+      </div>
     </div>
 
-          <div class="box item3status">
-      <h3><center>Status</center></h3>
+    <div id="b" class="split split-horizontal">
+      <center>
+        <h3>Status</h3>
       
         <div style="width: 250px; border-color: coral; border-width: 1px; border-style:solid;">
         MDSIpRest: <div id="serverIpMdsIpRestShow" style="display: inline-block;"></div>
@@ -372,28 +388,12 @@ $(document).ready(function(){
         </div>
       
         <hr>
+
         <h3><center>Details</center></h3>
-          <div id="detailsShow"></div>
+        <div id="detailsShow"></div>
 
+      </center>
     </div>
-
-    <div class="box2tree item5command">
-      <div style="border-color: coral; border-width: 5px; border-style:solid;">
-        For debugging purposes
-        <hr>
-        Set expression [a valid MDSplus expression]: 
-	<input id="expressionToEvaluateInput" type="text" value="" size="80"> 
-        <br>
-        <br>
-        <button id="buttonEvaluate">Evaluate expression</button> 
-        <br>
-        <br>
-        Result: <div id="evaluatedExpressionShow"></div></div>
-      </div>
-    </div> <!-- item5 end -->
-
-
-  </div>
 
 </body>
 </html>
