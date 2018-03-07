@@ -1,0 +1,13 @@
+<?xml version='1.0' encoding='utf-8'?>
+<widget id="com.giammy.jsTraverser" version="1.0.0" xmlns="http://www.w3.org/ns/widgets" xmlns:gap="https://phonegap.com/ns/1.0">
+  <name>jsTraverser</name>
+  <description>
+    Viewer for MDSplus archive
+    </description>
+
+  <author email="gianluca.moro@unipd.it" href="http://giammy.com">
+    Gianluca Moro
+  </author>
+
+  <preference name="phonegap-version" value="cli-6.0.0" />
+</widget>
