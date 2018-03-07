@@ -28,7 +28,7 @@ class Status {
 	this.internalEvaluatedExpression = "";
 	this.internalTreeName = "test";
 	this.internalCurrentTreeData = [
-					{"key": 0, 
+					{"key": 1, 
 					 "class": null,
 					 "dtype": null,
 					 "usage": null,
@@ -39,11 +39,42 @@ class Status {
 					 "number_of_children": null,
 					 "number_of_members": null,
 					 "type": null,
+					 //					 "children": null,
+					 "children": [{"key": 2, 
+					 "class": null,
+					 "dtype": null,
+					 "usage": null,
+					 "fullpath": null,
+					 "minpath": null,
+					 "node_name": "EMPTY TREE CHILD 1", 
+					 "path": null,
+					 "number_of_children": null,
+					 "number_of_members": null,
+					 "type": null,
+					 "children": null,
+					 "isOpen": false,
+					},],
+
+					 "isOpen": true,
+					},
+
+					{"key": 3, 
+					 "class": null,
+					 "dtype": null,
+					 "usage": null,
+					 "fullpath": null,
+					 "minpath": null,
+					 "node_name": "EMPTY TREE BIS", 
+					 "path": null,
+					 "number_of_children": null,
+					 "number_of_members": null,
+					 "type": null,
 					 "children": null,
 					 "isOpen": false,
 					},
+
 				       ];
-	this.internalCurrentTreeSource = [   // icon: png ...
+	//this.internalCurrentTreeSource = [   // icon: png ...
 					  // {"title": "EMPTY TREE", "key": "0"},
 				   // {"title":"1","key":"1"},
 				   // {"title":"2","key":"2"},
@@ -53,27 +84,27 @@ class Status {
 				   //      {"title": "Node 2.2", "key": "4"}
 				   //      ]},
 				   //    {"title": "5", "key": "5"},
-				 ];
+			       //];
 	this.internalUpdateF = new Array();
     }
 
-    convertTreeDataToTreeSource(internalTree) { 
-	var ausArr = [];
-	for (let [key, nod] of Object.entries(internalTree)) {
-	    // console.log(key); console.log(value);
-	    var isFolder = false;    
-	    if (nod.number_of_children + nod.number_of_members > 0) {
-		isFolder = true;
-	    }
-
-	    var children = null;
-	    if (nod.children) {
-		children = this.convertTreeDataToTreeSource(nod.children);
-	    }
-	    ausArr.push({title: nod.node_name, key: nod.key, folder: isFolder, expanded: nod.isOpen, children: children }); 
-	}
-	return(ausArr);
-    }
+    //convertTreeDataToTreeSource(internalTree) { 
+    //  var ausArr = [];
+    //	for (let [key, nod] of Object.entries(internalTree)) {
+    //	    // console.log(key); console.log(value);
+    //	    var isFolder = false;    
+    //	    if (nod.number_of_children + nod.number_of_members > 0) {
+    //		isFolder = true;
+    //	    }
+    //
+    //	    var children = null;
+    //	    if (nod.children) {
+    //		children = this.convertTreeDataToTreeSource(nod.children);
+    //	    }
+    //	    ausArr.push({title: nod.node_name, key: nod.key, folder: isFolder, expanded: nod.isOpen, children: children }); 
+    //	}
+    //	return(ausArr);
+    //}
 
     buildTreeDataFromNID(nid) {
 	return ({ 
@@ -96,7 +127,7 @@ class Status {
     get evaluatedExpression  () { return this.internalEvaluatedExpression; }
     get treeName             () { return this.internalTreeName; }
     get currentTreeData      () { return this.internalCurrentTreeData; }
-    get currentTreeSource    () { return this.internalCurrentTreeSource; }
+    //get currentTreeSource    () { return this.internalCurrentTreeSource; }
     get updateF              () { return this.internalUpdateF; }
 
     static get treeLabelsReturningArray() {
@@ -111,12 +142,10 @@ class Status {
     set evaluatedExpression  (x) { this.internalEvaluatedExpression = x;  this.update(); }
     set treeName             (x) { this.internalTreeName = x;             this.update(); }
     set updateF              (x) { this.internalUpdateF = x;              this.update(); }
-    set currentTreeSource    (x) { this.internalCurrentTreeSource = x;    this.update(); }
+    //set currentTreeSource    (x) { this.internalCurrentTreeSource = x;    this.update(); }
     set currentTreeData      (x) { 
 	this.internalCurrentTreeData = x;      
-	this.internalCurrentTreeSource = this.convertTreeDataToTreeSource(x);
-	// console.log(x);
-	// console.log(this.internalCurrentTreeSource)
+	//this.internalCurrentTreeSource = this.convertTreeDataToTreeSource(x);
 	this.update(); 
     }
 
@@ -126,8 +155,8 @@ class Status {
 
     update() {
 	// TODO optimize this update
-	this.internalCurrentTreeSource = 
-	    this.convertTreeDataToTreeSource(this.internalCurrentTreeData);
+	//this.internalCurrentTreeSource = 
+	//    this.convertTreeDataToTreeSource(this.internalCurrentTreeData);
 	for (var i=0; i<this.internalUpdateF.length; i++) {
 	    // call all the update functions
 	    this.internalUpdateF[i]();

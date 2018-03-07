@@ -22,12 +22,58 @@ function messageShow(str, type) {
     document.getElementById('messageShowLabel').innerText = localStr;
 }
 
+function treeCallback(key) {
+    //console.log("treeCallback key: " + key);
+    var node = status.getNodeFromNid(status.currentTreeData, key);
+    isOpen = node.isOpen;
+    status.updateNodeFromNid(status.currentTreeData, key, 'isOpen', !isOpen);
+    status.update();
+}
+
+function updateSubTree(level, myNode, treeData) {
+    var indent = ""; // new Array(level + 1).join(" -> ");
+    for (var i=0; i<treeData.length; i++) {
+	// update list removed tappable
+        var taskItem = ons.createElement(
+	    '<ons-list-item>' +  
+              '<ons-button onclick="treeCallback(' + treeData[i].key + ')" modifier="large--quiet" ripple>' +
+                '<div align="left">' +
+                  indent + treeData[i].node_name + 
+                '</div>' +
+	    '</ons-button>' +
+            '</ons-list-item>'
+        );
+        //document.querySelector("tree").appendChild(taskItem);
+	//https://dom.spec.whatwg.org/#interface-nonelementparentnode
+        myNode.appendChild(taskItem);
+	if (treeData[i].children != null && treeData[i].isOpen) {
+	    var modifier = 'modifier="inset"';
+            var subList = ons.createElement(
+	        '<ons-list ' + modifier + '></ons-list>'
+            );	    
+            myNode.appendChild(subList);
+	    updateSubTree(level+1, subList, treeData[i].children);
+	}
+      }
+}
+
+function updateTree() {
+    var treeData = status.currentTreeData;
+
+    // clear previous tree
+    var myNode = document.getElementById("tree");
+    while (myNode.firstChild) {	myNode.removeChild(myNode.firstChild); }
+
+    updateSubTree(0, myNode, treeData);
+}
+
 function updateUI() {
     document.getElementById('MDSIpRestInput').value = status.serverIpMdsIpRest;
     document.getElementById('serverIpMdsplusInput').value = status.serverIpMdsplus;
     document.getElementById('treeNameInput').value = status.treeName;
-
+    updateTree();
 }
+
 status.addUpdateF(updateUI);
 
 // buttons
@@ -96,27 +142,18 @@ document.addEventListener('init', function(event) {
       status.update();
   }
 
-  if (page.id === 'treePage') {
-      for(var i=0; i<5; i++) {
-	  // update list
-          var taskItem = ons.createElement(
-	    '<ons-list-item tappable>' + // category="' + myApp.services.categories.parseId(data.category)+ '">' +
-            //'<label class="left">' +
-            // '<ons-checkbox></ons-checkbox>' +
-            //'</label>' +
-            '<div class="center">' +
-              'data.title' +
-            '</div>' +
-            //'<div class="right">' +
-            //  '<ons-icon style="color: grey; padding-left: 4px" icon="ion-ios-trash-outline, material:md-delete"></ons-icon>' +
-            //'</div>' +
-            '</ons-list-item>'
-          );
-
-          //document.querySelector("tree").appendChild(taskItem);
-          document.getElementById('tree').appendChild(taskItem);
-      }
-  }
+  //if (page.id === 'treePage') {
+  //    for(var i=0; i<5; i++) {
+  //	  // update list
+  //        var taskItem = ons.createElement(
+  //	    '<ons-list-item tappable><div class="center">' +
+  //            'data title</div></ons-list-item>'
+  //        );
+  //
+  //          //document.querySelector("tree").appendChild(taskItem);
+  //        document.getElementById('tree').appendChild(taskItem);
+  //    }
+  //}
 
   // Fill the lists with initial data when the pages we need are ready.
   // This only happens once at the beginning of the app.
