@@ -23,20 +23,33 @@ class Connection {
 
     internalQuery(status, queryStr, callBackF) {
 	//console.log("internalQuery: queryStr= " + "http://" + status.serverIpMdsIpRest + "/" + queryStr);
-        //$.get("http://" + status.serverIpMdsIpRest + "/" + queryStr, callBackF);
 
-		var time1 = Date.now();
-		//console.log("TIMING");
-	$.get("http://" + status.serverIpMdsIpRest + "/" + queryStr, function (x) {
-		    var time2 = Date.now();
-		    console.log(time2 - time1);
-		    return callBackF(x);});
+	var url = "http://" + status.serverIpMdsIpRest + "/" + queryStr;
 
+	//console.log(url);
+
+	// do the request
+	var xhr = new XMLHttpRequest();
+	xhr.open('GET', url, true);
+	xhr.responseType = 'json';
+	xhr.onload = function() {
+	    var status = xhr.status;
+	    //console.log(status);
+	    if (status == 200) {
+	        callBackF(xhr.response);
+	    } else {
+	        callBackF("ERROR");
+	    }
+	};
+	xhr.send();
     }
 
     evalExpr(status, callBackF) {
-	var queryStr = "eval?expr=" + encodeURIComponent(status.expressionToEvaluate) + 
+	//console.log(status.expressionToEvaluate);
+		var queryStr = "eval?expr=" + encodeURIComponent(status.expressionToEvaluate) + 
+		    //var queryStr = "eval?expr=" + status.expressionToEvaluate + 
                        "&idx=" + status.connectionId;	
+		//console.log(queryStr);
 	this.internalQuery(status, queryStr, callBackF);
     }
 
