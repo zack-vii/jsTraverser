@@ -22,6 +22,45 @@ function messageShow(str, type) {
     document.getElementById('messageShowLabel').innerText = localStr;
 }
 
+function completeNodeInfos(status, connection, data, what, cont) {
+    if ( ! Array.isArray(what)) {  return cont(); }
+    if (what.length < 1) { return cont(); }
+
+    // get info and continue on remaining whats
+    var carWhat = what.shift();
+    // now, carWhat is car(what) and what is cdr(what)
+
+    status.expressionToEvaluate = "_m = getnci(" + data + ", '" + carWhat + "')";
+    connection.evalExpr(status, function( resp ) {
+            //alert( "Data: " + resp );
+            status.evaluatedExpression = resp;
+//console.log("completeNodeInfos IN got resp for data");
+//console.log(data);
+console.log(resp);
+		      
+            carWhat = carWhat.toLowerCase();
+//	    switch (carWhat) {
+//		case "fullpath":
+//		case "node_name":
+		    arrayOfNids  = convertArrayAsStrToArrayOfInt(data);
+//console.log(arrayOfNids);
+		    arrayOfNames = convertArrayAsStrToArrayOfStr(resp);
+		    if (arrayOfNids.length == arrayOfNames.length) {
+		        for (var i=0; i<arrayOfNames.length; i++) {
+		            status.updateNodeFromNid(status.currentTreeData, 
+							     arrayOfNids[i], 
+							     carWhat, arrayOfNames[i]);
+			}
+                        status.update();
+		    }
+//		    break;
+//	    }
+            completeNodeInfos(status, connection, data, what, cont);
+        });
+}
+
+
+
 function treeCallback(key) {
     //console.log("treeCallback key: " + key);
     var node = status.getNodeFromNid(status.currentTreeData, key);
@@ -38,7 +77,7 @@ function updateSubTree(level, myNode, treeData) {
 	    '<ons-list-item>' +  
               '<ons-button onclick="treeCallback(' + treeData[i].key + ')" modifier="large--quiet" ripple>' +
                 '<div align="left">' +
-                  indent + treeData[i].node_name + 
+                  indent + treeData[i].node_name + "(" + treeData[i].key + ")" + 
                 '</div>' +
 	    '</ons-button>' +
             '</ons-list-item>'
@@ -111,12 +150,11 @@ function getDataButtonClicked() {
         //alert( "Data: " + data );
         status.evaluatedExpression = data; // .substring(1, data.length-1).replace(/,/g, ", ");
         messageShow("Got data.", "OK");
-	ons.notification.alert("DATA: " + data);
+	//ons.notification.alert("DATA: " + data);
+        //console.log(data[0]);
 
-        //status.currentTreeData = status.convertArrayOfNidsStrToTreeData(data);
-        //// status.evaluatedExpression = data.substring(1, data.length-1).replace(/,/g, ", ");
-        //// status.currentTreeSource = convertDataToCurrentTree(status.evaluatedExpression);
-        //completeNodeInfos(status, connection, data, Status.treeLabelsReturningArray, function (x) {
+        status.currentTreeData = status.convertArrayOfNidsIntToTreeData(data);
+	//        completeNodeInfos(status, connection, data, Status.treeLabelsReturningArray, function (x) {
 	//    //alert("Complete DONE!");
 	//	showMessage("Data fetched.", "OK");
 	//	return null;

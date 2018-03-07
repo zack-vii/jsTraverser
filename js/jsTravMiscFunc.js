@@ -18,6 +18,7 @@
 
 function convertArrayAsStrToArrayOfStr(str) {
     // input string ['str1','str2',...]
+    //console.log(str);
     return str.substring(1, str.length-1).split(',');
 }
 

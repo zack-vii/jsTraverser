@@ -115,9 +115,13 @@ class Status {
 		    });
     }
 
+    convertArrayOfNidsIntToTreeData(arrayOfNidsInt) {
+	return(arrayOfNidsInt.map(this.buildTreeDataFromNID));
+    }
+
     convertArrayOfNidsStrToTreeData(arrayOfNidsStr) {
 	var data = convertArrayAsStrToArrayOfInt(arrayOfNidsStr);
-	return(data.map(this.buildTreeDataFromNID));
+	return(convertArrayOfNidsIntToTreeData(data));
     }
 
     get serverIpMdsIpRest    () { return this.internalServerIpMdsIpRest; }
