@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <title>JsTraverser</title>
@@ -39,6 +40,7 @@
   </template>
 
   <!-- Third navigation component: Tabbar. This will disappear if the first or second components change their content. -->
+  <!-- FOR ANDROID OR IOS -->
   <template id="tabbar.html">
     <ons-page id="tabbarPage">
       <ons-toolbar>
@@ -49,27 +51,13 @@
           </ons-toolbar-button>
         </div>
         <div class="center">jsTraverser</div>
-<div class="toolbar__right">
-    <span id="messageShowLabel" class="toolbar-button toolbar-button--outline" style="width: 50%; background-color: Yellow;">NOT CONNECTED</span>
-  </div>
-<!--          <div id="messageShowLabel" class="right" style="width: 50%; background-color: Yellow; border-color: black; border-width: 1px; border-style:solid;">NOT CONNECTED</div> -->
-          <!-- Toolbar-button  only visible for iOS/other. -->
-<!--
-          <ons-if platform="ios other">
-            <ons-toolbar-button component="button/new-task">New</ons-toolbar-button>
-          </ons-if>
--->
+        <div class="toolbar__right">
+          <span id="messageShowLabel" class="toolbar-button toolbar-button--outline" style="width: 50%; background-color: Yellow;">NOT CONNECTED</span>
         </div>
       </ons-toolbar>
 
-      <!-- Floating Action Button only visible for Android. -->
-<!--
-      <ons-if platform="android">
-        <ons-fab position="right bottom" component="button/new-task">
-          <ons-icon icon="md-edit"></ons-icon>
-        </ons-fab>
-      </ons-if>
--->
+      <!-- <ons-if platform="android ios other">  </ons-if> -->
+
       <!-- Auto-positioned Tabbar: top on Android, bottom on iOS/other. -->
       <ons-tabbar id="myTabbar" position="auto">
         <ons-tab page="html/status.html" label="Status" active>

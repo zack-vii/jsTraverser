@@ -22,23 +22,22 @@ class Connection {
     }
 
     internalQuery(status, queryStr, callBackF) {
-	//console.log("internalQuery: queryStr= " + "http://" + status.serverIpMdsIpRest + "/" + queryStr);
-
-	var url = "http://" + status.serverIpMdsIpRest + "/" + queryStr;
-
-	//console.log(url);
+        var url = "http://" + status.serverIpMdsIpRest + "/" + queryStr;
+	//console.log("internalQuery url: " + url);
 
 	// do the request
 	var xhr = new XMLHttpRequest();
 	xhr.open('GET', url, true);
-	xhr.responseType = 'json';
+        // https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/responseType
+	xhr.responseType = 'text'; 
 	xhr.onload = function() {
 	    var status = xhr.status;
 	    //console.log(status);
+	    //console.log(xhr.response);
 	    if (status == 200) {
 	        callBackF(xhr.response);
 	    } else {
-	        callBackF("ERROR");
+	        callBackF("ERROR: "+status);
 	    }
 	};
 	xhr.send();

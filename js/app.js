@@ -23,6 +23,7 @@ function messageShow(str, type) {
 }
 
 function completeNodeInfos(status, connection, data, what, cont) {
+    console.log("completeNodeInfos IN");
     if ( ! Array.isArray(what)) {  return cont(); }
     if (what.length < 1) { return cont(); }
 
@@ -30,13 +31,16 @@ function completeNodeInfos(status, connection, data, what, cont) {
     var carWhat = what.shift();
     // now, carWhat is car(what) and what is cdr(what)
 
+    
+    //console.log(convertArrayOfIntToStr(data));
     status.expressionToEvaluate = "_m = getnci(" + data + ", '" + carWhat + "')";
+    //console.log("completeNodeInfos: expressionToEvaluate: " + status.expressionToEvaluate);
     connection.evalExpr(status, function( resp ) {
             //alert( "Data: " + resp );
             status.evaluatedExpression = resp;
-//console.log("completeNodeInfos IN got resp for data");
+	    //console.log("completeNodeInfos IN got resp for data");
 //console.log(data);
-console.log(resp);
+//console.log(resp);
 		      
             carWhat = carWhat.toLowerCase();
 //	    switch (carWhat) {
@@ -60,12 +64,79 @@ console.log(resp);
 }
 
 
+function mergeData(s1, s2) {
+    if (s1 == "[]") return s2;
+    if (s2 == "[]") return s1;
+    return (s1.slice(0, -1) + "," + s2.slice(1));
+}
+
+function evaluateMultiExpr(infoskey, requests, retStr, callBackF) {
+    var carRequest = requests.shift();
+    status.expressionToEvaluate = carRequest;
+    connection.evalExpr(status, function( data ) {
+	    status.evaluatedExpression = data;
+	    var memb = status.convertArrayOfNidsStrToTreeData(data);
+	    status.addToChildren(status.currentTreeData, infoskey, memb);
+	    retStr = mergeData(retStr, data);
+	    if (requests.length > 0) {
+		evaluateMultiExpr(infoskey, requests, retStr, callBackF);
+	    } else {
+		callBackF(retStr);
+	    }
+	});
+}
+
+function getInfoOfNid(status, nid, callBackF) {
+    var infoStr = "NO INFO FOR " + nid;
+    var infos = status.getNodeFromNid(status.currentTreeData, nid);
+    
+    if (infos.number_of_children + infos.number_of_members > 0 && !infos.children) {
+        messageShow("Fetching subtree ... please wait", "WAITING");
+        console.log("Fetching subtree ... please wait", "WAITING");
+
+        var theRequests = [];
+        if (infos.number_of_members > 0) {
+            theRequests = [ "_m = getnci(getnci(" + infos.key + ", 'MEMBER_NIDS'), 'NID_NUMBER')" ];
+        }
+        if (infos.number_of_children > 0) {
+            theRequests.push("_m = getnci(getnci(" + infos.key + ", 'CHILDREN_NIDS'), 'NID_NUMBER')");
+        }
+
+        evaluateMultiExpr(infos.key, theRequests, "[]", function (dataStr) {
+		//console.log(dataStr);
+		completeNodeInfos(status, connection, dataStr, Status.treeLabelsReturningArray, function (x) {
+			status.update();
+			messageShow("Subtree loaded.", "OK");
+		    });
+	    });
+    }
+    
+    console.log(infos);
+    if (infos) {
+        infoStr = "";
+        for (let [key, value] of Object.entries(infos)) {
+            infoStr = infoStr + key + ": <b>" + value + "</b>,<br>";
+        }
+    }
+    callBackF(infoStr);
+}
+
 
 function treeCallback(key) {
-    //console.log("treeCallback key: " + key);
+    console.log("treeCallback key: " + key);
     var node = status.getNodeFromNid(status.currentTreeData, key);
     isOpen = node.isOpen;
     status.updateNodeFromNid(status.currentTreeData, key, 'isOpen', !isOpen);
+
+    // get info
+    console.log("treeCallback: getting getInfoOfNid");
+    getInfoOfNid(status, key, function (infoStr) {
+            console.log("treeCallback: got getInfoOfNid " + infoStr);
+	    //showDetails(infoStr);
+            //document.getElementById('detailsShowLabel').innerText = infoStr;
+	    status.currentDetails = infoStr;
+	});
+
     status.update();
 }
 
@@ -110,6 +181,7 @@ function updateUI() {
     document.getElementById('MDSIpRestInput').value = status.serverIpMdsIpRest;
     document.getElementById('serverIpMdsplusInput').value = status.serverIpMdsplus;
     document.getElementById('treeNameInput').value = status.treeName;
+    document.getElementById('detailsShowLabel').innerHTML = status.currentDetails;
     updateTree();
 }
 
@@ -140,6 +212,8 @@ function openTreeButtonClicked() {
 	messageShow("Tree opened", "OK");
         //ons.notification.alert("got " + x); return x; 
     });
+
+    //document.getElementById('detailsShowLabel').innerText = "button open tree clicked";
 }
 
 function getDataButtonClicked() {
@@ -149,18 +223,18 @@ function getDataButtonClicked() {
     connection.evalExpr(status, function( data ) {
         //alert( "Data: " + data );
         status.evaluatedExpression = data; // .substring(1, data.length-1).replace(/,/g, ", ");
-        messageShow("Got data.", "OK");
+        //messageShow("Got data.", "OK");
 	//ons.notification.alert("DATA: " + data);
-        //console.log(data[0]);
+        //console.log(data);
 
-        status.currentTreeData = status.convertArrayOfNidsIntToTreeData(data);
-	//        completeNodeInfos(status, connection, data, Status.treeLabelsReturningArray, function (x) {
-	//    //alert("Complete DONE!");
-	//	showMessage("Data fetched.", "OK");
-	//	return null;
-	//    });
+        status.currentTreeData = status.convertArrayOfNidsStrToTreeData(data);
+	completeNodeInfos(status, connection, data, Status.treeLabelsReturningArray, function (x) {
+	    //alert("Complete DONE!");
+	    messageShow("Data fetched.", "OK");
+	    return null;
+	});
 
-        });
+    });
 }
 
 
@@ -179,6 +253,11 @@ document.addEventListener('init', function(event) {
   if (page.id === 'statusPage') {
       status.update();
   }
+
+  if (page.id === 'detailsPage') {
+      status.update();
+  }
+
 
   //if (page.id === 'treePage') {
   //    for(var i=0; i<5; i++) {

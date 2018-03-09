@@ -32,3 +32,9 @@ function convertArrayAsStrToArrayOfInt(str) {
     }
     return data;
 }
+
+function convertArrayOfIntToStr(x) {
+    // input: an array, returns a string "[1,2,...]"
+    return("["+x.join(",")+"]");
+}
+

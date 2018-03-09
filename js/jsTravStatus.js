@@ -27,6 +27,7 @@ class Status {
 	this.internalExpressionToEvaluate = "2+$PI"; // "2%2B$PI"
 	this.internalEvaluatedExpression = "";
 	this.internalTreeName = "test";
+        this.internalCurrentDetails ="DETAILS";
 	this.internalCurrentTreeData = [
 					{"key": 1, 
 					 "class": null,
@@ -121,7 +122,7 @@ class Status {
 
     convertArrayOfNidsStrToTreeData(arrayOfNidsStr) {
 	var data = convertArrayAsStrToArrayOfInt(arrayOfNidsStr);
-	return(convertArrayOfNidsIntToTreeData(data));
+	return(this.convertArrayOfNidsIntToTreeData(data));
     }
 
     get serverIpMdsIpRest    () { return this.internalServerIpMdsIpRest; }
@@ -130,12 +131,13 @@ class Status {
     get expressionToEvaluate () { return this.internalExpressionToEvaluate; }
     get evaluatedExpression  () { return this.internalEvaluatedExpression; }
     get treeName             () { return this.internalTreeName; }
+    get currentDetails       () { return this.internalCurrentDetails; }
     get currentTreeData      () { return this.internalCurrentTreeData; }
     //get currentTreeSource    () { return this.internalCurrentTreeSource; }
     get updateF              () { return this.internalUpdateF; }
 
     static get treeLabelsReturningArray() {
-	return ["node_name", "fullpath", "class", "dtype", "usage", // "minpath", "path",
+	return ["node_name", // "fullpath", "class", "dtype", "usage", // "minpath", "path",
 		"number_of_children", "number_of_members"];
     }
 
@@ -145,6 +147,7 @@ class Status {
     set expressionToEvaluate (x) { this.internalExpressionToEvaluate = x; this.update(); }
     set evaluatedExpression  (x) { this.internalEvaluatedExpression = x;  this.update(); }
     set treeName             (x) { this.internalTreeName = x;             this.update(); }
+    set currentDetails       (x) { this.internalCurrentDetails = x;       this.update(); }
     set updateF              (x) { this.internalUpdateF = x;              this.update(); }
     //set currentTreeSource    (x) { this.internalCurrentTreeSource = x;    this.update(); }
     set currentTreeData      (x) { 
