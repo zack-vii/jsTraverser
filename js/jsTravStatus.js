@@ -21,7 +21,7 @@ class Status {
     constructor() {
 	//this.internalServerIpMdsIpRest = "localhost:8081";
         //this.internalServerIpMdsIpRest = "portal.igi.cnr.it/mdsipRest";
-	this.internalServerIpMdsIpRest = "www1:8081";
+	this.internalServerIpMdsIpRest = "www1.igi.cnr.it:8081";
 	this.internalServerIpMdsplus = "roserver.igi.cnr.it:8000";
 	this.internalConnectionId = -1; // -1 is no connection
 	this.internalExpressionToEvaluate = "2+$PI"; // "2%2B$PI"
