@@ -6,6 +6,11 @@ console.log("Global initialization");
 let status = new Status();
 let connection = new Connection();
 
+function messageLogWindow(str) {
+    document.getElementById('logWindow').innerText = str;
+    console.log("messageWindow: " + str);
+}
+
 function messageShow(str, type) {
     var localStr = str;
     switch (type) {
@@ -201,6 +206,7 @@ function connectToMdsplusButtonClicked() {
     connection.openConnection(status, function(x) { 
 	messageShow("Connected", "OK");
         //ons.notification.alert("got " + x); return x; 
+	messageLogWindow(x);
     });
 }
 
