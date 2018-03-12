@@ -19,6 +19,7 @@
 class Status {
 
     constructor() {
+	this.doingUpdate = true;
 	//this.internalServerIpMdsIpRest = "localhost:8081";
         //this.internalServerIpMdsIpRest = "portal.igi.cnr.it/mdsipRest";
 	this.internalServerIpMdsIpRest = "www1.igi.cnr.it:8081";
@@ -75,37 +76,8 @@ class Status {
 					},
 
 				       ];
-	//this.internalCurrentTreeSource = [   // icon: png ...
-					  // {"title": "EMPTY TREE", "key": "0"},
-				   // {"title":"1","key":"1"},
-				   // {"title":"2","key":"2"},
-				   //    {"title": "1", "key": "1"},
-				   //    {"title": "2", "key": "2", "folder": true, "children": [
-				   //      {"title": "Node 2.1", "key": "3"},
-				   //      {"title": "Node 2.2", "key": "4"}
-				   //      ]},
-				   //    {"title": "5", "key": "5"},
-			       //];
 	this.internalUpdateF = new Array();
     }
-
-    //convertTreeDataToTreeSource(internalTree) { 
-    //  var ausArr = [];
-    //	for (let [key, nod] of Object.entries(internalTree)) {
-    //	    // console.log(key); console.log(value);
-    //	    var isFolder = false;    
-    //	    if (nod.number_of_children + nod.number_of_members > 0) {
-    //		isFolder = true;
-    //	    }
-    //
-    //	    var children = null;
-    //	    if (nod.children) {
-    //		children = this.convertTreeDataToTreeSource(nod.children);
-    //	    }
-    //	    ausArr.push({title: nod.node_name, key: nod.key, folder: isFolder, expanded: nod.isOpen, children: children }); 
-    //	}
-    //	return(ausArr);
-    //}
 
     buildTreeDataFromNID(nid) {
 	return ({ 
@@ -160,71 +132,69 @@ class Status {
 	this.internalUpdateF.push(f);
     }
 
+    suspendUpdate() {
+	this.doingUpdate = false;
+    }
+
+    restoreUpdate() {
+	this.doingUpdate = true;
+	this.update();
+    }
+
     update() {
+	if (!this.doingUpdate) return;
+
 	// TODO optimize this update
-	//this.internalCurrentTreeSource = 
-	//    this.convertTreeDataToTreeSource(this.internalCurrentTreeData);
 	for (var i=0; i<this.internalUpdateF.length; i++) {
 	    // call all the update functions
 	    this.internalUpdateF[i]();
 	}
     }
 
-    updateNodeFromNid(theTree, nid, fieldName, fieldValue) {
-	var found = null;
+    updateNodeFromNid(theTree, nid, fieldName, updateFunc) {
 	for (var i=0; i<theTree.length; i++) {
 	    if (theTree[i].key == nid) {
-		theTree[i][fieldName] = fieldValue;
-		return true;;
+		theTree[i][fieldName] = updateFunc(theTree[i][fieldName]);
+		return true;
 	    } 
 
 	    if (Array.isArray(theTree[i].children)) {
-		found = this.updateNodeFromNid(theTree[i].children, nid, fieldName, fieldValue);
-		if ( found ) {
-		    return found;
+		if (this.updateNodeFromNid(theTree[i].children, nid, fieldName, updateFunc)) {
+		    return true;
 		}
 	    }
 	}
 	return null;	
     }
 
-    addToChildren(theTree, nid, theChildrenTree) {
-	var found = null;
-	for (var i=0; i<theTree.length; i++) {
-	    if (theTree[i].key == nid) {
-	        if (Array.isArray(theTree[i].children)) {
-		    //console.log("ADDING CHILDREN!!!");
-		    //console.log(i);
-		    //console.log(theTree);
+    updateNodeFromNidSetValue(theTree, nid, fieldName, fieldValue) {
+	return this.updateNodeFromNid(theTree, nid, fieldName, function(x) { return fieldValue; });
+    }
+
+    updateNodeFromNidSwitchFlag(theTree, nid, fieldName) {
+	return this.updateNodeFromNid(theTree, nid, fieldName, function(x) { return !x; });
+    }
+
+    updateNodeFromNidAddToChildren(theTree, nid, theChildrenTree) {
+	return this.updateNodeFromNid(theTree, nid, 'children', function (x) {
+		var ausArr = [];
+	        if (Array.isArray(x)) {
+		    ausArr = x.slice();;
 		    for (var j=0; j<theChildrenTree.length; j++) {
-		        theTree[i].children.push(theChildrenTree[j]);
+		        ausArr.push(theChildrenTree[j]);
 		    }
-		    //console.log(theTree);
-		    //alert("x");
+		    return ausArr;
 		} else {
-		    theTree[i].children = theChildrenTree;
+		    return theChildrenTree;
 		}
-		return true;;
-	    } 
-	    if (Array.isArray(theTree[i].children)) {
-		found = this.addToChildren(theTree[i].children, nid, theChildrenTree);
-		if ( found ) {
-		    return found;
-		}
-	    }
-	}
-	return null;	
+	    });
     }
 
     getNodeFromNid(theTree, nid) {
 	var found = null;
-	//console.log(theTree);
 	for (var i=0; i<theTree.length; i++) {
-	    //console.log(nid);
-	    //console.log(theTree[i].key);
 	    if (theTree[i].key == nid) {
-		found = theTree[i];
-		return found;
+		return theTree[i];
 	    } 
 	    if ( theTree[i].children ) {
 		found = this.getNodeFromNid(theTree[i].children, nid);

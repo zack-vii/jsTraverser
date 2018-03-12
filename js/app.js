@@ -4,6 +4,7 @@ window.myApp = {};
 // global initialization
 console.log("Global initialization");
 let status = new Status();
+let statusOld = null;
 let connection = new Connection();
 
 function messageLogWindow(str) {
@@ -56,7 +57,7 @@ function completeNodeInfos(status, connection, data, what, cont) {
 		    arrayOfNames = convertArrayAsStrToArrayOfStr(resp);
 		    if (arrayOfNids.length == arrayOfNames.length) {
 		        for (var i=0; i<arrayOfNames.length; i++) {
-		            status.updateNodeFromNid(status.currentTreeData, 
+		            status.updateNodeFromNidSetValue(status.currentTreeData, 
 							     arrayOfNids[i], 
 							     carWhat, arrayOfNames[i]);
 			}
@@ -81,7 +82,7 @@ function evaluateMultiExpr(infoskey, requests, retStr, callBackF) {
     connection.evalExpr(status, function( data ) {
 	    status.evaluatedExpression = data;
 	    var memb = status.convertArrayOfNidsStrToTreeData(data);
-	    status.addToChildren(status.currentTreeData, infoskey, memb);
+	    status.updateNodeFromNidAddToChildren(status.currentTreeData, infoskey, memb);
 	    retStr = mergeData(retStr, data);
 	    if (requests.length > 0) {
 		evaluateMultiExpr(infoskey, requests, retStr, callBackF);
@@ -107,10 +108,12 @@ function getInfoOfNid(status, nid, callBackF) {
             theRequests.push("_m = getnci(getnci(" + infos.key + ", 'CHILDREN_NIDS'), 'NID_NUMBER')");
         }
 
+
+	status.suspendUpdate();
         evaluateMultiExpr(infos.key, theRequests, "[]", function (dataStr) {
 		//console.log(dataStr);
 		completeNodeInfos(status, connection, dataStr, Status.treeLabelsReturningArray, function (x) {
-			status.update();
+			status.restoreUpdate();
 			messageShow("Subtree loaded.", "OK");
 		    });
 	    });
@@ -120,7 +123,9 @@ function getInfoOfNid(status, nid, callBackF) {
     if (infos) {
         infoStr = "";
         for (let [key, value] of Object.entries(infos)) {
-            infoStr = infoStr + key + ": <b>" + value + "</b>,<br>";
+	    if (key.toString() != 'children') {
+		infoStr = infoStr + key + ": <b>" + value + "</b>,<br>";
+	    }
         }
     }
     callBackF(infoStr);
@@ -129,28 +134,30 @@ function getInfoOfNid(status, nid, callBackF) {
 
 function treeCallback(key) {
     console.log("treeCallback key: " + key);
-    var node = status.getNodeFromNid(status.currentTreeData, key);
-    isOpen = node.isOpen;
-    status.updateNodeFromNid(status.currentTreeData, key, 'isOpen', !isOpen);
+    status.suspendUpdate();
+    status.updateNodeFromNidSwitchFlag(status.currentTreeData, key, 'isOpen');
 
     // get info
     console.log("treeCallback: getting getInfoOfNid");
     getInfoOfNid(status, key, function (infoStr) {
-            console.log("treeCallback: got getInfoOfNid " + infoStr);
+            //console.log("treeCallback: got getInfoOfNid " + infoStr);
+	    ons.notification.alert(infoStr); 
 	    //showDetails(infoStr);
             //document.getElementById('detailsShowLabel').innerText = infoStr;
 	    status.currentDetails = infoStr;
+	    status.restoreUpdate();
 	});
 
-    status.update();
+    //status.update();
 }
 
 function updateSubTree(level, myNode, treeData) {
     var indent = ""; // new Array(level + 1).join(" -> ");
     for (var i=0; i<treeData.length; i++) {
 	// update list removed tappable
+	var itemId = "itemid" + treeData[i].key;
         var taskItem = ons.createElement(
-	    '<ons-list-item>' +  
+	    '<ons-list-item id="' + itemId + '">' +  
               '<ons-button onclick="treeCallback(' + treeData[i].key + ')" modifier="large--quiet" ripple>' +
                 '<div align="left">' +
                   indent + treeData[i].node_name + "(" + treeData[i].key + ")" + 
@@ -172,23 +179,47 @@ function updateSubTree(level, myNode, treeData) {
       }
 }
 
-function updateTree() {
+function updateTree(forceUpdate) {
     var treeData = status.currentTreeData;
+    var myNode = document.getElementById("tree");
 
     // clear previous tree
-    var myNode = document.getElementById("tree");
-    while (myNode.firstChild) {	myNode.removeChild(myNode.firstChild); }
+    //if (forceUpdate) {
+	while (myNode.firstChild) { myNode.removeChild(myNode.firstChild); }
+    //}
 
     updateSubTree(0, myNode, treeData);
 }
 
 function updateUI() {
+    var forceUpdate = false;
     console.log("updateUI");
-    document.getElementById('MDSIpRestInput').value = status.serverIpMdsIpRest;
-    document.getElementById('serverIpMdsplusInput').value = status.serverIpMdsplus;
-    document.getElementById('treeNameInput').value = status.treeName;
-    document.getElementById('detailsShowLabel').innerHTML = status.currentDetails;
-    updateTree();
+
+    if (statusOld === null) {
+	statusOld = new Status();
+	forceUpdate = true;
+    } else {
+	forceUpdate = false;
+    }
+
+    if (forceUpdate || status.serverIpMdsIpRest != statusOld.serverIpMdsIpRest) {
+        document.getElementById('MDSIpRestInput').value = status.serverIpMdsIpRest;
+	statusOld.serverIpMdsIpRest = status.serverIpMdsIpRest;
+    }
+
+    if (forceUpdate || status.serverIpMdsplus != statusOld.serverIpMdsplus) {
+        document.getElementById('serverIpMdsplusInput').value = status.serverIpMdsplus;
+	statusOld.serverIpMdsplus = status.serverIpMdsplus;
+    }
+    if (forceUpdate || status.treeName != statusOld.treeName) {
+	document.getElementById('treeNameInput').value = status.treeName;
+	statusOld.treeName = status.treeName;
+    }
+    if (forceUpdate || status.currentDetails != statusOld.currentDetails) {
+	document.getElementById('detailsShowLabel').innerHTML = status.currentDetails;
+	statusOld.currentDetails = status.currentDetails;
+    }
+    updateTree(forceUpdate);
 }
 
 status.addUpdateF(updateUI);
@@ -226,6 +257,7 @@ function openTreeButtonClicked() {
 function getDataButtonClicked() {
     //console.log("getDataButtonClicked");
     messageShow("Getting data ... please wait ...", "WAITING");
+    status.suspendUpdate();
     status.expressionToEvaluate = "_m = getnci(getnci(0, 'member_nids'), 'nid_number')";
     connection.evalExpr(status, function( data ) {
         //alert( "Data: " + data );
@@ -237,6 +269,7 @@ function getDataButtonClicked() {
         status.currentTreeData = status.convertArrayOfNidsStrToTreeData(data);
 	completeNodeInfos(status, connection, data, Status.treeLabelsReturningArray, function (x) {
 	    //alert("Complete DONE!");
+	    status.restoreUpdate();
 	    messageShow("Data fetched.", "OK");
 	    return null;
 	});
