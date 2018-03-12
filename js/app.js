@@ -7,7 +7,7 @@ let status = new Status();
 let connection = new Connection();
 
 function messageLogWindow(str) {
-    document.getElementById('logWindow').innerText = str;
+    //document.getElementById('logWindow').innerText = str;
     console.log("messageWindow: " + str);
 }
 
@@ -183,6 +183,7 @@ function updateTree() {
 }
 
 function updateUI() {
+    console.log("updateUI");
     document.getElementById('MDSIpRestInput').value = status.serverIpMdsIpRest;
     document.getElementById('serverIpMdsplusInput').value = status.serverIpMdsplus;
     document.getElementById('treeNameInput').value = status.treeName;
