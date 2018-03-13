@@ -156,15 +156,21 @@ function treeCallback(key) {
 }
 
 function updateSubTree(level, myNode, treeData) {
-    var indent = ""; // new Array(level + 1).join(" -> ");
     for (var i=0; i<treeData.length; i++) {
 	// update list removed tappable
 	var itemId = "itemid" + treeData[i].key;
+	var iconName = "../img/null-icon.png";
+	if (status.hasSubTreeNode(treeData[i])) {
+	    iconName = "../img/folder-icon.png";
+	}
         var taskItem = ons.createElement(
 	    '<ons-list-item id="' + itemId + '">' +  
+              '<div class="left">' +
+                '<img class="list-item__thumbnail" src="' + iconName + '">' +
+              '</div>' +
               '<ons-button onclick="treeCallback(' + treeData[i].key + ')" modifier="large--quiet" ripple>' +
                 '<div align="left">' +
-                  indent + treeData[i].node_name + "(" + treeData[i].key + ")" + 
+	          treeData[i].node_name.slice(1, -1) +    // "(" + treeData[i].key + ")" + 
                 '</div>' +
 	    '</ons-button>' +
             '</ons-list-item>'

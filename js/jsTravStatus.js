@@ -36,7 +36,7 @@ class Status {
 					 "usage": null,
 					 "fullpath": null,
 					 "minpath": null,
-					 "node_name": "EMPTY TREE", 
+					 "node_name": " EMPTY TREE ", 
 					 "path": null,
 					 "number_of_children": null,
 					 "number_of_members": null,
@@ -48,7 +48,7 @@ class Status {
 					 "usage": null,
 					 "fullpath": null,
 					 "minpath": null,
-					 "node_name": "EMPTY TREE CHILD 1", 
+					 "node_name": " EMPTY TREE CHILD 1 ", 
 					 "path": null,
 					 "number_of_children": null,
 					 "number_of_members": null,
@@ -66,7 +66,7 @@ class Status {
 					 "usage": null,
 					 "fullpath": null,
 					 "minpath": null,
-					 "node_name": "EMPTY TREE BIS", 
+					 "node_name": " EMPTY TREE BIS ", 
 					 "path": null,
 					 "number_of_children": null,
 					 "number_of_members": null,
@@ -207,12 +207,16 @@ class Status {
     }
 
 
-    hasSubTree(key) {
-	var nd = this.getNodeFromNid(this.internalCurrentTreeData, key);
+    hasSubTreeNode(nd) {
 	if (nd != null && nd.number_of_children + nd.number_of_members > 0) {
 	    return true;
 	} else {
 	    return false;
 	}
     }
+
+    hasSubTree(key) {
+	return (this.hasSubTreeNode(this.getNodeFromNid(this.internalCurrentTreeData, key)));
+    }
+
 }
