@@ -141,7 +141,7 @@ class Status {
     //	this.update();
     //}
 
-    update() {
+    DELETEupdate() {
 	//if (!this.doingUpdate) return;
 
 	// TODO optimize this update
@@ -155,12 +155,13 @@ class Status {
 	for (var i=0; i<theTree.length; i++) {
 	    if (theTree[i].key == nid) {
 		theTree[i][fieldName] = updateFunc(theTree[i][fieldName]);
-		return true;
+		return theTree[i][fieldName];
 	    } 
 
 	    if (Array.isArray(theTree[i].children)) {
-		if (this.updateNodeFromNid(theTree[i].children, nid, fieldName, updateFunc)) {
-		    return true;
+		var aus = this.updateNodeFromNid(theTree[i].children, nid, fieldName, updateFunc);
+		if (aus != null) {
+		    return aus;
 		}
 	    }
 	}
