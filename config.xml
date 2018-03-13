@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
 <!-- config.xml reference: https://build.phonegap.com/docs/config-xml -->
 <!-- https://github.com/phonegap/phonegap-start/blob/master/www/config.xml -->
-<!-- https://github.com/phonegap/phonegap-start/blob/master/www/config.xml -->
+
 <widget id="com.giammy.jsTraverser" version="1.0.0" xmlns="http://www.w3.org/ns/widgets" xmlns:gap="https://phonegap.com/ns/1.0">
   <name>jsTraverser</name>
   <description>Viewer for MDSplus archive</description>
