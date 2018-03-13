@@ -61,7 +61,7 @@ function completeNodeInfos(status, connection, data, what, cont) {
 							     arrayOfNids[i], 
 							     carWhat, arrayOfNames[i]);
 			}
-                        status.update();
+                        //status.update();
 		    }
 //		    break;
 //	    }
@@ -109,12 +109,13 @@ function getInfoOfNid(status, nid, callBackF) {
         }
 
 
-	status.suspendUpdate();
+	//status.suspendUpdate();
         evaluateMultiExpr(infos.key, theRequests, "[]", function (dataStr) {
 		//console.log(dataStr);
 		completeNodeInfos(status, connection, dataStr, Status.treeLabelsReturningArray, function (x) {
-			status.restoreUpdate();
+			//status.restoreUpdate();
 			messageShow("Subtree loaded.", "OK");
+			status.update();
 		    });
 	    });
     }
@@ -134,18 +135,21 @@ function getInfoOfNid(status, nid, callBackF) {
 
 function treeCallback(key) {
     console.log("treeCallback key: " + key);
-    status.suspendUpdate();
+    //status.suspendUpdate();
     status.updateNodeFromNidSwitchFlag(status.currentTreeData, key, 'isOpen');
 
     // get info
     console.log("treeCallback: getting getInfoOfNid");
     getInfoOfNid(status, key, function (infoStr) {
             //console.log("treeCallback: got getInfoOfNid " + infoStr);
-	    ons.notification.alert(infoStr); 
+	    if (!status.hasSubTree(key)) {
+		ons.notification.alert(infoStr); 
+	    }
 	    //showDetails(infoStr);
             //document.getElementById('detailsShowLabel').innerText = infoStr;
 	    status.currentDetails = infoStr;
-	    status.restoreUpdate();
+	    //status.restoreUpdate();
+	    status.update();
 	});
 
     //status.update();
@@ -229,6 +233,7 @@ function connectToMdsipRestButtonClicked() {
     //console.log("connectToMdsipRestButtonClicked");
     status.serverIpMdsIpRest = document.getElementById('MDSIpRestInput').value;
     messageShow("Set MDSIP REST", "OK");
+    status.update();
 }
 
 function connectToMdsplusButtonClicked() {
@@ -239,6 +244,7 @@ function connectToMdsplusButtonClicked() {
 	messageShow("Connected", "OK");
         //ons.notification.alert("got " + x); return x; 
 	messageLogWindow(x);
+	status.update();
     });
 }
 
@@ -249,6 +255,7 @@ function openTreeButtonClicked() {
     connection.openTree(status, function(x) { 
 	messageShow("Tree opened", "OK");
         //ons.notification.alert("got " + x); return x; 
+	status.update();
     });
 
     //document.getElementById('detailsShowLabel').innerText = "button open tree clicked";
@@ -257,7 +264,7 @@ function openTreeButtonClicked() {
 function getDataButtonClicked() {
     //console.log("getDataButtonClicked");
     messageShow("Getting data ... please wait ...", "WAITING");
-    status.suspendUpdate();
+    //status.suspendUpdate();
     status.expressionToEvaluate = "_m = getnci(getnci(0, 'member_nids'), 'nid_number')";
     connection.evalExpr(status, function( data ) {
         //alert( "Data: " + data );
@@ -269,8 +276,9 @@ function getDataButtonClicked() {
         status.currentTreeData = status.convertArrayOfNidsStrToTreeData(data);
 	completeNodeInfos(status, connection, data, Status.treeLabelsReturningArray, function (x) {
 	    //alert("Complete DONE!");
-	    status.restoreUpdate();
+	    //status.restoreUpdate();
 	    messageShow("Data fetched.", "OK");
+	    status.update();
 	    return null;
 	});
 

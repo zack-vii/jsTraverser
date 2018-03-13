@@ -19,7 +19,7 @@
 class Status {
 
     constructor() {
-	this.doingUpdate = true;
+	//this.doingUpdate = true;
 	//this.internalServerIpMdsIpRest = "localhost:8081";
         //this.internalServerIpMdsIpRest = "portal.igi.cnr.it/mdsipRest";
 	this.internalServerIpMdsIpRest = "www1.igi.cnr.it:8081";
@@ -109,40 +109,40 @@ class Status {
     get updateF              () { return this.internalUpdateF; }
 
     static get treeLabelsReturningArray() {
-	return ["node_name", // "fullpath", "class", "dtype", "usage", // "minpath", "path",
+	return ["node_name", "fullpath", "class", "dtype", "usage", // "minpath", "path",
 		"number_of_children", "number_of_members"];
     }
 
-    set serverIpMdsIpRest    (x) { this.internalServerIpMdsIpRest = x;    this.update(); }
-    set serverIpMdsplus      (x) { this.internalServerIpMdsplus = x;      this.update(); }
-    set connectionId         (x) { this.internalConnectionId = x;         this.update(); }
-    set expressionToEvaluate (x) { this.internalExpressionToEvaluate = x; this.update(); }
-    set evaluatedExpression  (x) { this.internalEvaluatedExpression = x;  this.update(); }
-    set treeName             (x) { this.internalTreeName = x;             this.update(); }
-    set currentDetails       (x) { this.internalCurrentDetails = x;       this.update(); }
-    set updateF              (x) { this.internalUpdateF = x;              this.update(); }
-    //set currentTreeSource    (x) { this.internalCurrentTreeSource = x;    this.update(); }
+    set serverIpMdsIpRest    (x) { this.internalServerIpMdsIpRest = x;    /*this.update();*/ }
+    set serverIpMdsplus      (x) { this.internalServerIpMdsplus = x;      /*this.update();*/ }
+    set connectionId         (x) { this.internalConnectionId = x;         /*this.update();*/ }
+    set expressionToEvaluate (x) { this.internalExpressionToEvaluate = x; /*this.update();*/ }
+    set evaluatedExpression  (x) { this.internalEvaluatedExpression = x;  /*this.update();*/ }
+    set treeName             (x) { this.internalTreeName = x;             /*this.update();*/ }
+    set currentDetails       (x) { this.internalCurrentDetails = x;       /*this.update();*/ }
+    set updateF              (x) { this.internalUpdateF = x;              /*this.update();*/ }
+    //set currentTreeSource    (x) { this.internalCurrentTreeSource = x;    /*this.update();*/ }
     set currentTreeData      (x) { 
 	this.internalCurrentTreeData = x;      
 	//this.internalCurrentTreeSource = this.convertTreeDataToTreeSource(x);
-	this.update(); 
+	//this.update(); 
     }
 
     addUpdateF(f) {
 	this.internalUpdateF.push(f);
     }
 
-    suspendUpdate() {
-	this.doingUpdate = false;
-    }
+    //suspendUpdate() {
+    //	this.doingUpdate = false;
+    //}
 
-    restoreUpdate() {
-	this.doingUpdate = true;
-	this.update();
-    }
+    //restoreUpdate() {
+    //	this.doingUpdate = true;
+    //	this.update();
+    //}
 
     update() {
-	if (!this.doingUpdate) return;
+	//if (!this.doingUpdate) return;
 
 	// TODO optimize this update
 	for (var i=0; i<this.internalUpdateF.length; i++) {
@@ -204,5 +204,15 @@ class Status {
 	    }
 	}
 	return null;
+    }
+
+
+    hasSubTree(key) {
+	var nd = this.getNodeFromNid(this.internalCurrentTreeData, key);
+	if (nd != null && nd.number_of_children + nd.number_of_members > 0) {
+	    return true;
+	} else {
+	    return false;
+	}
     }
 }
