@@ -19,6 +19,11 @@
 class Status {
 
     constructor() {
+	this.internalMDSPLUS_CLASS_ARRAY_DESCRIPTOR = 4;
+
+
+	this.internalDATA_TYPE_ARRAY = 4;
+
 	//this.doingUpdate = true;
 	//this.internalServerIpMdsIpRest = "localhost:8081";
         //this.internalServerIpMdsIpRest = "portal.igi.cnr.it/mdsipRest";
@@ -96,6 +101,10 @@ class Status {
 	var data = convertArrayAsStrToArrayOfInt(arrayOfNidsStr);
 	return(this.convertArrayOfNidsIntToTreeData(data));
     }
+
+    get MDSPLUS_CLASS_ARRAY_DESCRIPTOR () { return this.internalMDSPLUS_CLASS_ARRAY_DESCRIPTOR; }
+
+    get DATA_TYPE_ARRAY () { return this.internalDATA_TYPE_ARRAY; }
 
     get serverIpMdsIpRest    () { return this.internalServerIpMdsIpRest; }
     get serverIpMdsplus      () { return this.internalServerIpMdsplus; }

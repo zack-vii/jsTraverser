@@ -56,6 +56,17 @@ function completeNodeInfos(status, connection, data, what, cont) {
 		    status.updateNodeFromNidSetValue(status.currentTreeData, 
 					     arrayOfNids[i], 
 					     carWhat, arrayOfNames[i]);
+
+		    if (carWhat == 'class') {
+			var classId = parseInt(arrayOfNames[i]);
+			if (classId == status.MDSPLUS_CLASS_ARRAY_DESCRIPTOR) {
+			    //console.log("SETTING IIFF class " + arrayOfNames[i]);
+		            status.updateNodeFromNidSetValue(status.currentTreeData, 
+					     arrayOfNids[i], 
+					     'type', status.DATA_TYPE_ARRAY);
+
+			}
+		    }
 		}
 	    }
             completeNodeInfos(status, connection, data, what, cont);
@@ -66,6 +77,7 @@ function completeNodeInfos(status, connection, data, what, cont) {
 function mergeData(s1, s2) {
     if (s1 == "[]") return s2;
     if (s2 == "[]") return s1;
+    //console.log("mergeData: s1=" + s1 + " s2=" + s2);
     return (s1.slice(0, -1) + "," + s2.slice(1));
 }
 
@@ -138,30 +150,40 @@ function treeCallback(key) {
             //document.getElementById('detailsShowLabel').innerText = infoStr;
 	    status.currentDetails = infoStr;
 
-	    console.log("rebuildAll: " + rebuildAll);
+	    //console.log("infoStr: " + infoStr);
 	    if (rebuildAll) {
 	        updateTreeAll();
 	    } else {
 	        var subListId ="subListIdOf" + key;
-		if (currentFlagIsOpen) {
-		    document.getElementById(subListId).style.display = "block";
-		} else {
-		    document.getElementById(subListId).style.display = "none";
+		var theSublist = document.getElementById(subListId);
+		if (theSublist != null) {
+		    theSublist.style.display = (currentFlagIsOpen)?"block":"none";
 		}
 	        //updateTreeAll();
 	    }
-
+	    updateLabels();
 	});
+}
+
+function removeHeads(str) {
+    if (str == null)
+	return "";
+
+    return str.slice(1, -1);
 }
 
 function updateSubTree(level, myNode, treeData) {
     for (var i=0; i<treeData.length; i++) {
 	// update list removed tappable
 	var itemId = "itemid" + treeData[i].key;
-	var iconName = "img/graph.svg"; // "img/null-icon.png";
+	var iconName = "img/transparent.svg"; // "img/null-icon.png";
 	if (status.hasSubTreeNode(treeData[i])) {
 	    iconName = "img/folder.svg";
 	}
+	if (treeData[i].type == status.DATA_TYPE_ARRAY) {
+	    iconName = "img/graph.svg";
+	}
+	//console.log("updateSubTree: treeData[i].node_name=" + treeData[i].node_name);
         var taskItem = ons.createElement(
 	    '<ons-list-item id="' + itemId + '">' +  
               '<div class="left">' +
@@ -169,7 +191,7 @@ function updateSubTree(level, myNode, treeData) {
               '</div>' +
               '<ons-button onclick="treeCallback(' + treeData[i].key + ')" modifier="large--quiet" ripple>' +
                 '<div align="left">' +
-	          treeData[i].node_name.slice(1, -1) +    // "(" + treeData[i].key + ")" + 
+	        removeHeads(treeData[i].node_name) +    // "(" + treeData[i].key + ")" + 
                 '</div>' +
 	    '</ons-button>' +
             '</ons-list-item>'
@@ -200,7 +222,7 @@ function updateTreeAll() {
 }
 
 function updateLabels() {
-    console.log("updateLabels");
+    //console.log("updateLabels - " + status.currentDetails);
 
     document.getElementById('MDSIpRestInput').value = status.serverIpMdsIpRest;
     document.getElementById('serverIpMdsplusInput').value = status.serverIpMdsplus;
