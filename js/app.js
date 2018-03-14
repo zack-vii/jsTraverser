@@ -67,6 +67,22 @@ function completeNodeInfos(status, connection, data, what, cont) {
 
 			}
 		    }
+
+		    if (carWhat == 'usage') {
+			var aus = parseInt(arrayOfNames[i]);
+			if (aus == status.MDSPLUS_USAGE_TEXT) {
+			    //console.log("SETTING IIFF class " + arrayOfNames[i]);
+		            status.updateNodeFromNidSetValue(status.currentTreeData, 
+					     arrayOfNids[i], 
+					     'type', status.DATA_TYPE_TEXT);
+
+			}
+		    }
+
+
+
+
+
 		}
 	    }
             completeNodeInfos(status, connection, data, what, cont);
@@ -182,6 +198,9 @@ function updateSubTree(level, myNode, treeData) {
 	}
 	if (treeData[i].type == status.DATA_TYPE_ARRAY) {
 	    iconName = "img/graph.svg";
+	}
+	if (treeData[i].type == status.DATA_TYPE_TEXT) {
+	    iconName = "img/document.svg";
 	}
 	//console.log("updateSubTree: treeData[i].node_name=" + treeData[i].node_name);
         var taskItem = ons.createElement(

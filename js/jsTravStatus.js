@@ -20,9 +20,11 @@ class Status {
 
     constructor() {
 	this.internalMDSPLUS_CLASS_ARRAY_DESCRIPTOR = 4;
-
+	this.internalMDSPLUS_USAGE_TEXT = 8;
 
 	this.internalDATA_TYPE_ARRAY = 4;
+	this.internalDATA_TYPE_TEXT = 8;
+
 
 	//this.doingUpdate = true;
 	//this.internalServerIpMdsIpRest = "localhost:8081";
@@ -103,8 +105,10 @@ class Status {
     }
 
     get MDSPLUS_CLASS_ARRAY_DESCRIPTOR () { return this.internalMDSPLUS_CLASS_ARRAY_DESCRIPTOR; }
+    get MDSPLUS_USAGE_TEXT () { return this.internalMDSPLUS_USAGE_TEXT; }
 
     get DATA_TYPE_ARRAY () { return this.internalDATA_TYPE_ARRAY; }
+    get DATA_TYPE_TEXT () { return this.internalDATA_TYPE_TEXT; }
 
     get serverIpMdsIpRest    () { return this.internalServerIpMdsIpRest; }
     get serverIpMdsplus      () { return this.internalServerIpMdsplus; }
