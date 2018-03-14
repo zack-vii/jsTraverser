@@ -160,7 +160,7 @@ function updateSubTree(level, myNode, treeData) {
 	var itemId = "itemid" + treeData[i].key;
 	var iconName = "img/graph.svg"; // "img/null-icon.png";
 	if (status.hasSubTreeNode(treeData[i])) {
-	    iconName = "img/folder-icon.png";
+	    iconName = "img/folder.svg";
 	}
         var taskItem = ons.createElement(
 	    '<ons-list-item id="' + itemId + '">' +  
