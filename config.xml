@@ -6,7 +6,9 @@
   <name>jsTraverser</name>
   <description>Viewer for MDSplus archive</description>
   <author email="gianluca.moro@unipd.it" href="http://giammy.com">Gianluca Moro</author>
-  <icon src="icon.png" />
+
+  <!-- https://pixabay.com/ -->
+  <icon src="img/icon.png" />
 
   <!-- <preference name="phonegap-version" value="cli-6.5.0" /> -->
 

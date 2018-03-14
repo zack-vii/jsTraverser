@@ -158,7 +158,7 @@ function updateSubTree(level, myNode, treeData) {
     for (var i=0; i<treeData.length; i++) {
 	// update list removed tappable
 	var itemId = "itemid" + treeData[i].key;
-	var iconName = "img/null-icon.png";
+	var iconName = "img/graph.svg"; // "img/null-icon.png";
 	if (status.hasSubTreeNode(treeData[i])) {
 	    iconName = "img/folder-icon.png";
 	}
