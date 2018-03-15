@@ -23,7 +23,7 @@ class Connection {
 
     internalQuery(status, queryStr, callBackF) {
         var url = "http://" + status.serverIpMdsIpRest + "/" + queryStr;
-	//console.log("internalQuery REQUEST: " + url);
+	//console.log("internalQuery: REQUEST: " + url);
 
 	var time1 = Date.now();
 
@@ -56,7 +56,9 @@ class Connection {
     }
 
     openConnection(status, callBackF) {
-	this.internalQuery(status, "connect?ip=" + status.serverIpMdsplus, function( data ) {
+	var expr = "connect?ip=" + status.serverIpMdsplus;
+	//console.log("open Connection serverIpMdsplus: " + status.serverIpMdsplus + " expr: " + expr);
+	this.internalQuery(status, expr, function( data ) {
 	    // alert( "in openConnection: Data " + data );
 	    status.connectionId = parseInt(data);
 	    //this.isOpen = true;

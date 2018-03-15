@@ -301,7 +301,7 @@ function connectToMdsipRestButtonClicked() {
 
 function connectToMdsplusButtonClicked() {
     //console.log("connectToMdsplusButtonClicked");
-    status.serverIpMdsPlus = document.getElementById('serverIpMdsplusInput').value;
+    status.serverIpMdsplus = document.getElementById('serverIpMdsplusInput').value;
     messageShow("Opening connection", "WAITING");
     connection.openConnection(status, function(x) { 
 	messageShow("Connected", "OK");

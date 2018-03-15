@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <svg version="1.1" viewBox="0 0 31.965 32.003" xmlns="http://www.w3.org/2000/svg">
  <g transform="translate(-.78493 -1019.8)">
-  <path transform="matrix(1.1356 0 0 1.1356 -2.6616 1016.4)" d="m29.421 17.163a12.311 12.311 0 0 1 -12.311 12.311 12.311 12.311 0 0 1 -12.311 -12.311 12.311 12.311 0 0 1 12.311 -12.311 12.311 12.311 0 0 1 12.311 12.311z" fill="#fff" stroke="#ff5e00" stroke-width="1.9998"/>
+  <path transform="matrix(1.1356 0 0 1.1356 -2.6616 1016.4)" d="m29.421 17.163a12.311 12.311 0 0 1 -12.311 12.311 12.311 12.311 0 0 1 -12.311 -12.311 12.311 12.311 0 0 1 12.311 -12.311 12.311 12.311 0 0 1 12.311 12.311z" fill="#fff" stroke="#0072ff" stroke-width="1.9998"/>
   <flowRoot fill="black" font-family="Sans" font-size="40px" letter-spacing="0px" stroke-width="1px" word-spacing="0px" style="line-height:125%" xml:space="preserve"><flowRegion><rect x="-2.4622" y="-5.562" width="124.94" height="43.31"/></flowRegion><flowPara/></flowRoot>
-  <flowRoot transform="matrix(.66925 0 0 .66925 5.2663 1034.5)" fill="#ff5e00" font-family="Sans" font-size="16px" letter-spacing="0px" word-spacing="0px" style="line-height:125%" xml:space="preserve"><flowRegion><rect x="-1.3258" y="-8.0874" width="47.603" height="45.457" fill="#ff5e00"/></flowRegion><flowPara fill="#ff5e00" font-weight="bold">export</flowPara></flowRoot>
-  <rect x="10.95" y="1028.7" width="9.7227" height="13.195" rx=".68365" ry=".68365" fill="#fff" stroke="#ff5e00" stroke-linecap="round"/>
-  <rect x="12.591" y="1030.8" width="9.7227" height="13.195" rx=".68365" ry=".68365" fill="#fff" stroke="#ff5e00" stroke-linecap="round"/>
+  <flowRoot transform="matrix(.66925 0 0 .66925 5.2663 1034.5)" fill="#0072ff" font-family="Sans" font-size="16px" letter-spacing="0px" word-spacing="0px" style="line-height:125%" xml:space="preserve"><flowRegion><rect x="-1.3258" y="-8.0874" width="47.603" height="45.457" fill="#0072ff"/></flowRegion><flowPara fill="#0072ff" font-weight="bold">export</flowPara></flowRoot>
+  <rect x="10.95" y="1028.7" width="9.7227" height="13.195" rx=".68365" ry=".68365" fill="#fff" stroke="#0072ff" stroke-linecap="round"/>
+  <rect x="12.591" y="1030.8" width="9.7227" height="13.195" rx=".68365" ry=".68365" fill="#fff" stroke="#0072ff" stroke-linecap="round"/>
   <flowRoot fill="black" font-family="Sans" font-size="7.5px" letter-spacing="0px" stroke-width="1px" word-spacing="0px" style="line-height:125%" xml:space="preserve"><flowRegion><rect x="-35.482" y="-3.4154" width="81.885" height="51.013"/></flowRegion><flowPara/></flowRoot>
-  <path d="m14.169 1037.4h6.566" fill="none" stroke="#ff5e00" stroke-width=".5"/>
-  <path d="m14.169 1040.7h6.566" fill="none" stroke="#ff5e00" stroke-width=".5"/>
-  <path d="m14.169 1039h6.566" fill="none" stroke="#ff5e00" stroke-width=".5"/>
-  <path d="m14.169 1035.7h6.566" fill="none" stroke="#ff5e00" stroke-width=".5"/>
-  <path d="m14.169 1034.1h6.566" fill="none" stroke="#ff5e00" stroke-width=".5"/>
+  <path d="m14.169 1037.4h6.566" fill="none" stroke="#0072ff" stroke-width=".5"/>
+  <path d="m14.169 1040.7h6.566" fill="none" stroke="#0072ff" stroke-width=".5"/>
+  <path d="m14.169 1039h6.566" fill="none" stroke="#0072ff" stroke-width=".5"/>
+  <path d="m14.169 1035.7h6.566" fill="none" stroke="#0072ff" stroke-width=".5"/>
+  <path d="m14.169 1034.1h6.566" fill="none" stroke="#0072ff" stroke-width=".5"/>
  </g>
 </svg>
