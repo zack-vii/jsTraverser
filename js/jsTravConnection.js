@@ -23,7 +23,9 @@ class Connection {
 
     internalQuery(status, queryStr, callBackF) {
         var url = "http://" + status.serverIpMdsIpRest + "/" + queryStr;
-	//console.log("internalQuery url: " + url);
+	//console.log("internalQuery REQUEST: " + url);
+
+	var time1 = Date.now();
 
 	// do the request
 	var xhr = new XMLHttpRequest();
@@ -34,6 +36,7 @@ class Connection {
 	    var status = xhr.status;
 	    //console.log(status);
 	    //console.log(xhr.response);
+	    //console.log("internalQuery: '"+url+"' -> " + status + " '" + xhr.response + "' (" + (Date.now() - time1) + "ms)");
 	    if (status == 200) {
 	        callBackF(xhr.response);
 	    } else {

@@ -22,8 +22,9 @@ class Status {
 	this.internalMDSPLUS_CLASS_ARRAY_DESCRIPTOR = 4;
 	this.internalMDSPLUS_USAGE_TEXT = 8;
 
-	this.internalDATA_TYPE_ARRAY = 4;
-	this.internalDATA_TYPE_TEXT = 8;
+	this.internalDATA_TYPE_HASSUBTREE = 16;
+	this.internalDATA_TYPE_ARRAY = 32;
+	this.internalDATA_TYPE_TEXT = 33;
 
 
 	//this.doingUpdate = true;
@@ -36,60 +37,33 @@ class Status {
 	this.internalEvaluatedExpression = "";
 	this.internalTreeName = "test";
         this.internalCurrentDetails ="DETAILS";
-	this.internalCurrentTreeData = [
-					{"key": 1, 
-					 "class": null,
-					 "dtype": null,
-					 "usage": null,
-					 "fullpath": null,
-					 "minpath": null,
-					 "node_name": " EMPTY TREE ", 
-					 "path": null,
-					 "number_of_children": null,
-					 "number_of_members": null,
-					 "type": null,
-					 //					 "children": null,
-					 "children": [{"key": 2, 
-					 "class": null,
-					 "dtype": null,
-					 "usage": null,
-					 "fullpath": null,
-					 "minpath": null,
-					 "node_name": " EMPTY TREE CHILD 1 ", 
-					 "path": null,
-					 "number_of_children": null,
-					 "number_of_members": null,
-					 "type": null,
-					 "children": null,
-					 "isOpen": false,
-					},],
-
-					 "isOpen": true,
-					},
-
-					{"key": 3, 
-					 "class": null,
-					 "dtype": null,
-					 "usage": null,
-					 "fullpath": null,
-					 "minpath": null,
-					 "node_name": " EMPTY TREE BIS ", 
-					 "path": null,
-					 "number_of_children": null,
-					 "number_of_members": null,
-					 "type": null,
-					 "children": null,
-					 "isOpen": false,
-					},
-
-				       ];
+	this.internalCurrentTreeData = this.buildDummyTree(0);
 	this.internalUpdateF = new Array();
     }
+
+    static get treeLabelsReturningArray() {
+	return ["node_name", "fullpath", "class", "dtype", "usage", // "minpath", "path",
+		"number_of_children", "number_of_members"];
+    }
+
+
+    buildDummyTree(length) {
+	var tree = [];
+	for (var i=0; i<length; i++) {
+	    var n = this.buildTreeDataFromNID(i);
+	    n['node_name'] = "'Node Name "+i+"'";
+	    tree.push(n);
+	}
+	return tree;
+    }
+
 
     buildTreeDataFromNID(nid) {
 	return ({ 
 		    key: nid,
 		    type: null,
+		    number_of_children: null,
+		    number_of_members: null,
 		    children: null,
 		    isOpen: false,
 		    });
@@ -107,8 +81,9 @@ class Status {
     get MDSPLUS_CLASS_ARRAY_DESCRIPTOR () { return this.internalMDSPLUS_CLASS_ARRAY_DESCRIPTOR; }
     get MDSPLUS_USAGE_TEXT () { return this.internalMDSPLUS_USAGE_TEXT; }
 
-    get DATA_TYPE_ARRAY () { return this.internalDATA_TYPE_ARRAY; }
-    get DATA_TYPE_TEXT () { return this.internalDATA_TYPE_TEXT; }
+    get DATA_TYPE_HASSUBTREE () { return this.internalDATA_TYPE_HASSUBTREE; }
+    get DATA_TYPE_ARRAY      () { return this.internalDATA_TYPE_ARRAY; }
+    get DATA_TYPE_TEXT       () { return this.internalDATA_TYPE_TEXT; }
 
     get serverIpMdsIpRest    () { return this.internalServerIpMdsIpRest; }
     get serverIpMdsplus      () { return this.internalServerIpMdsplus; }
@@ -120,11 +95,6 @@ class Status {
     get currentTreeData      () { return this.internalCurrentTreeData; }
     //get currentTreeSource    () { return this.internalCurrentTreeSource; }
     get updateF              () { return this.internalUpdateF; }
-
-    static get treeLabelsReturningArray() {
-	return ["node_name", "fullpath", "class", "dtype", "usage", // "minpath", "path",
-		"number_of_children", "number_of_members"];
-    }
 
     set serverIpMdsIpRest    (x) { this.internalServerIpMdsIpRest = x;    /*this.update();*/ }
     set serverIpMdsplus      (x) { this.internalServerIpMdsplus = x;      /*this.update();*/ }

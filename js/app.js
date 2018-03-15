@@ -57,32 +57,37 @@ function completeNodeInfos(status, connection, data, what, cont) {
 					     arrayOfNids[i], 
 					     carWhat, arrayOfNames[i]);
 
-		    if (carWhat == 'class') {
-			var classId = parseInt(arrayOfNames[i]);
-			if (classId == status.MDSPLUS_CLASS_ARRAY_DESCRIPTOR) {
+		    var ausValue = parseInt(arrayOfNames[i]);
+
+		    switch (carWhat) {
+		    case 'class':
+			if (ausValue == status.MDSPLUS_CLASS_ARRAY_DESCRIPTOR) {
 			    //console.log("SETTING IIFF class " + arrayOfNames[i]);
 		            status.updateNodeFromNidSetValue(status.currentTreeData, 
 					     arrayOfNids[i], 
 					     'type', status.DATA_TYPE_ARRAY);
 
 			}
-		    }
-
-		    if (carWhat == 'usage') {
-			var aus = parseInt(arrayOfNames[i]);
-			if (aus == status.MDSPLUS_USAGE_TEXT) {
+			break;
+		    case 'usage':
+			if (ausValue == status.MDSPLUS_USAGE_TEXT) {
 			    //console.log("SETTING IIFF class " + arrayOfNames[i]);
 		            status.updateNodeFromNidSetValue(status.currentTreeData, 
 					     arrayOfNids[i], 
 					     'type', status.DATA_TYPE_TEXT);
 
 			}
+			break;
+		    
+		    case 'number_of_children':
+		    case 'number_of_members':
+			if (ausValue > 0) {
+		            status.updateNodeFromNidSetValue(status.currentTreeData, 
+					     arrayOfNids[i], 
+					     'type', status.DATA_TYPE_HASSUBTREE);
+			}
+			break;
 		    }
-
-
-
-
-
 		}
 	    }
             completeNodeInfos(status, connection, data, what, cont);
@@ -152,13 +157,19 @@ function getInfoOfNid(status, nid, callBackF) {
 
 
 function treeCallback(key) {
-    console.log("treeCallback key: " + key);
+    //console.log("treeCallback key: " + key);
     var currentFlagIsOpen = status.updateNodeFromNidSwitchFlag(status.currentTreeData, key, 'isOpen');
 
+    var time1 = Date.now();
+
     // get info
-    console.log("treeCallback: getting getInfoOfNid");
+    //console.log("treeCallback: getting getInfoOfNid");
     getInfoOfNid(status, key, function (rebuildAll, infoStr) {
             //console.log("treeCallback: got getInfoOfNid " + infoStr);
+
+
+	    console.log("getInfoOfNid-callback: " + (Date.now() - time1) + "ms");
+
 	    if (!status.hasSubTree(key)) {
 		ons.notification.alert(infoStr); 
 	    }
@@ -168,16 +179,21 @@ function treeCallback(key) {
 
 	    //console.log("infoStr: " + infoStr);
 	    if (rebuildAll) {
+	        //console.log("getInfoOfNid-callback-END:preupdatetreeall " + (Date.now() - time1) + "ms");
 	        updateTreeAll();
+	        //console.log("getInfoOfNid-callback-END:postupdatetreeall " + (Date.now() - time1) + "ms");
 	    } else {
 	        var subListId ="subListIdOf" + key;
 		var theSublist = document.getElementById(subListId);
+		console.log("subListId: " + subListId + " theSubList: " + theSublist);
 		if (theSublist != null) {
 		    theSublist.style.display = (currentFlagIsOpen)?"block":"none";
 		}
 	        //updateTreeAll();
 	    }
+	    //console.log("getInfoOfNid-callback-END: " + (Date.now() - time1) + "ms");
 	    updateLabels();
+	    console.log("getInfoOfNid-callback-END: " + (Date.now() - time1) + "ms");
 	});
 }
 
@@ -192,19 +208,33 @@ function updateSubTree(level, myNode, treeData) {
     for (var i=0; i<treeData.length; i++) {
 	// update list removed tappable
 	var itemId = "itemid" + treeData[i].key;
-	var iconName = "img/transparent.svg"; // "img/null-icon.png";
-	if (status.hasSubTreeNode(treeData[i])) {
-	    iconName = "img/folder.svg";
-	}
-	if (treeData[i].type == status.DATA_TYPE_ARRAY) {
+	var iconName;
+
+	switch (treeData[i].type) {
+	case status.DATA_TYPE_ARRAY:
 	    iconName = "img/graph.svg";
-	}
-	if (treeData[i].type == status.DATA_TYPE_TEXT) {
+	    break;
+	case status.DATA_TYPE_TEXT:
 	    iconName = "img/document.svg";
+	    break;
+	case status.DATA_TYPE_HASSUBTREE:
+	    if (treeData[i].children == null) {
+		iconName = "img/folderClosedDisabled.svg";
+	    } else {
+		iconName = "img/folderOpen.svg";
+	    }
+	    break;
+	default:
+	    iconName = "img/transparent.svg";
 	}
-	//console.log("updateSubTree: treeData[i].node_name=" + treeData[i].node_name);
+
+	//if (status.hasSubTreeNode(treeData[i])) {
+	//    iconName = "img/folder.svg";
+	//}
+
+	
         var taskItem = ons.createElement(
-	    '<ons-list-item id="' + itemId + '">' +  
+            '<ons-list-item id="' + itemId + '">' +  
               '<div class="left">' +
                 '<img class="list-item__thumbnail" src="' + iconName + '">' +
               '</div>' +
@@ -215,15 +245,16 @@ function updateSubTree(level, myNode, treeData) {
 	    '</ons-button>' +
             '</ons-list-item>'
         );
-        //document.querySelector("tree").appendChild(taskItem);
-	//https://dom.spec.whatwg.org/#interface-nonelementparentnode
+	
         myNode.appendChild(taskItem);
-	if (treeData[i].children != null && treeData[i].isOpen) {
+	if (treeData[i].children != null) {
 	    var modifier = 'modifier="inset"';
 	    var subListId ="subListIdOf" + treeData[i].key;
             var subList = ons.createElement(
 	        '<ons-list id="' + subListId + '"' + modifier + '></ons-list>'
-            );	    
+            );
+
+	    subList.style.display = (treeData[i].isOpen)?"block":"none";
             myNode.appendChild(subList);
 	    updateSubTree(level+1, subList, treeData[i].children);
 	}
@@ -234,10 +265,19 @@ function updateTreeAll() {
     console.log("updateTree");
     var treeData = status.currentTreeData;
     var myNode = document.getElementById("tree");
+    var parentNode = myNode.parentNode;
+    var c = document.createDocumentFragment();
 
-    // clear previous tree
-    while (myNode.firstChild) { myNode.removeChild(myNode.firstChild); }
+    parentNode.removeChild(myNode);
+    myNode = document.createElement("ons-list");
+    myNode.id = "tree";
+
+    var time1 = Date.now();
+    console.log("updatetreeall1 " + (Date.now() - time1) + "ms");
     updateSubTree(0, myNode, treeData);
+    c.appendChild(myNode);
+    parentNode.appendChild(c);
+    console.log("updatetreeall2 " + (Date.now() - time1) + "ms");
 }
 
 function updateLabels() {
@@ -266,7 +306,7 @@ function connectToMdsplusButtonClicked() {
     connection.openConnection(status, function(x) { 
 	messageShow("Connected", "OK");
         //ons.notification.alert("got " + x); return x; 
-	messageLogWindow(x);
+	//messageLogWindow(x);
 	updateLabels();
     });
 }
@@ -405,6 +445,11 @@ document.addEventListener('init', function(event) {
   if (page.id === 'statusPage') {
       updateLabels();
   }
+
+  if (page.id === 'treePage') {
+      updateTreeAll();
+  }
+
 
   if (page.id === 'detailsPage') {
       updateLabels();	  
