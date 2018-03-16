@@ -1,6 +1,6 @@
 /* 
  * jsTraverser
- * Copyright (C) 2017 Gianluca.Moro@unipd.it
+ * Copyright (C) 2018 Gianluca.Moro@unipd.it
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,15 +18,13 @@
 
 class Connection {
     constructor() {
-	this.isOpen = false;
+	this.showTimingFlag = false;
     }
 
     internalQuery(status, queryStr, callBackF) {
+	var time1 = Date.now();
         var url = "http://" + status.serverIpMdsIpRest + "/" + queryStr;
 	//console.log("internalQuery: REQUEST: " + url);
-
-	var time1 = Date.now();
-
 	// do the request
 	var xhr = new XMLHttpRequest();
 	xhr.open('GET', url, true);
@@ -36,7 +34,9 @@ class Connection {
 	    var status = xhr.status;
 	    //console.log(status);
 	    //console.log(xhr.response);
-	    //console.log("internalQuery: '"+url+"' -> " + status + " '" + xhr.response + "' (" + (Date.now() - time1) + "ms)");
+	    if (this.showTimingFlag) {
+	        console.log("internalQuery: '"+url+"' -> " + status + " '" + xhr.response + "' (" + (Date.now() - time1) + "ms)");
+	    }
 	    if (status == 200) {
 	        callBackF(xhr.response);
 	    } else {
@@ -46,9 +46,9 @@ class Connection {
 	xhr.send();
     }
 
-    evalExpr(status, callBackF) {
+    evalExpr(status, expr, callBackF) {
 	//console.log(status.expressionToEvaluate);
-		var queryStr = "eval?expr=" + encodeURIComponent(status.expressionToEvaluate) + 
+		var queryStr = "eval?expr=" + encodeURIComponent(expr) + 
 		    //var queryStr = "eval?expr=" + status.expressionToEvaluate + 
                        "&idx=" + status.connectionId;	
 		//console.log(queryStr);
@@ -75,7 +75,7 @@ class Connection {
 
     openTree(status, callBackF) {
 	status.expressionToEvaluate = "treeopen('" + status.treeName + "',-1)";
-	this.evalExpr(status, function( data ) {
+	this.evalExpr(status, status.expressionToEvaluate, function( data ) {
             //alert( "Data: " + data );
             status.evaluatedExpression = data;
 	    callBackF(data);

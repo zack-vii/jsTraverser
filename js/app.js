@@ -1,3 +1,21 @@
+/* 
+ * jsTraverser
+ * Copyright (C) 2018 Gianluca.Moro@unipd.it
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 // App logic.
 window.myApp = {};
 
@@ -41,7 +59,7 @@ function completeNodeInfos(status, connection, data, what, cont) {
     //console.log(convertArrayOfIntToStr(data));
     status.expressionToEvaluate = "_m = getnci(" + data + ", '" + carWhat + "')";
     //console.log("completeNodeInfos: expressionToEvaluate: " + status.expressionToEvaluate);
-    connection.evalExpr(status, function( resp ) {
+    connection.evalExpr(status, status.expressionToEvaluate, function( resp ) {
             //alert( "Data: " + resp );
             status.evaluatedExpression = resp;
 	    //console.log("completeNodeInfos IN got resp for data");
@@ -105,7 +123,7 @@ function mergeData(s1, s2) {
 function evaluateMultiExpr(infoskey, requests, retStr, callBackF) {
     var carRequest = requests.shift();
     status.expressionToEvaluate = carRequest;
-    connection.evalExpr(status, function( data ) {
+    connection.evalExpr(status, status.expressionToEvaluate, function( data ) {
 	    status.evaluatedExpression = data;
 	    var memb = status.convertArrayOfNidsStrToTreeData(data);
 	    status.updateNodeFromNidAddToChildren(status.currentTreeData, infoskey, memb);
@@ -329,7 +347,7 @@ function getDataButtonClicked() {
     messageShow("Getting data ... please wait ...", "WAITING");
     //status.suspendUpdate();
     status.expressionToEvaluate = "_m = getnci(getnci(0, 'member_nids'), 'nid_number')";
-    connection.evalExpr(status, function( data ) {
+    connection.evalExpr(status, status.expressionToEvaluate, function( data ) {
         //alert( "Data: " + data );
         status.evaluatedExpression = data; // .substring(1, data.length-1).replace(/,/g, ", ");
         //messageShow("Got data.", "OK");
