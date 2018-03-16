@@ -59,16 +59,16 @@ function completeNodeInfos(status, connection, data, what, cont) {
     //console.log(convertArrayOfIntToStr(data));
     status.expressionToEvaluate = "_m = getnci(" + data + ", '" + carWhat + "')";
     //console.log("completeNodeInfos: expressionToEvaluate: " + status.expressionToEvaluate);
-    connection.evalExpr(status, status.expressionToEvaluate, function( resp ) {
+    connection.evalExpr(status, status.expressionToEvaluate, function( respJson ) {
             //alert( "Data: " + resp );
-            status.evaluatedExpression = resp;
+            status.evaluatedExpression = respJson.data;
 	    //console.log("completeNodeInfos IN got resp for data");
 //console.log(data);
 //console.log(resp);
 		      
             carWhat = carWhat.toLowerCase();
 	    arrayOfNids  = convertArrayAsStrToArrayOfInt(data);
-	    arrayOfNames = convertArrayAsStrToArrayOfStr(resp);
+	    arrayOfNames = convertArrayAsStrToArrayOfStr(respJson.data);
 	    if (arrayOfNids.length == arrayOfNames.length) {
 		for (var i=0; i<arrayOfNames.length; i++) {
 		    status.updateNodeFromNidSetValue(status.currentTreeData, 
@@ -123,7 +123,8 @@ function mergeData(s1, s2) {
 function evaluateMultiExpr(infoskey, requests, retStr, callBackF) {
     var carRequest = requests.shift();
     status.expressionToEvaluate = carRequest;
-    connection.evalExpr(status, status.expressionToEvaluate, function( data ) {
+    connection.evalExpr(status, status.expressionToEvaluate, function( resp ) {
+	    var data = resp.data;
 	    status.evaluatedExpression = data;
 	    var memb = status.convertArrayOfNidsStrToTreeData(data);
 	    status.updateNodeFromNidAddToChildren(status.currentTreeData, infoskey, memb);
@@ -215,13 +216,6 @@ function treeCallback(key) {
 	});
 }
 
-function removeHeads(str) {
-    if (str == null)
-	return "";
-
-    return str.slice(1, -1);
-}
-
 function updateSubTree(level, myNode, treeData) {
     for (var i=0; i<treeData.length; i++) {
 	// update list removed tappable
@@ -258,7 +252,7 @@ function updateSubTree(level, myNode, treeData) {
               '</div>' +
               '<ons-button onclick="treeCallback(' + treeData[i].key + ')" modifier="large--quiet" ripple>' +
                 '<div align="left">' +
-	        removeHeads(treeData[i].node_name) +    // "(" + treeData[i].key + ")" + 
+	        trimQuotesSpaces(treeData[i].node_name) +    // "(" + treeData[i].key + ")" + 
                 '</div>' +
 	    '</ons-button>' +
             '</ons-list-item>'
@@ -333,7 +327,7 @@ function openTreeButtonClicked() {
     //console.log("openTreeButtonClicked");
     status.treeName = document.getElementById('treeNameInput').value;
     messageShow("Opening tree", "WAITING");
-    connection.openTree(status, function(x) { 
+    connection.treeopen(status, function(x) { 
 	messageShow("Tree opened", "OK");
         //ons.notification.alert("got " + x); return x; 
 	updateLabels();
@@ -347,7 +341,8 @@ function getDataButtonClicked() {
     messageShow("Getting data ... please wait ...", "WAITING");
     //status.suspendUpdate();
     status.expressionToEvaluate = "_m = getnci(getnci(0, 'member_nids'), 'nid_number')";
-    connection.evalExpr(status, status.expressionToEvaluate, function( data ) {
+    connection.evalExpr(status, status.expressionToEvaluate, function( resp ) {
+	var data = resp.data;
         //alert( "Data: " + data );
         status.evaluatedExpression = data; // .substring(1, data.length-1).replace(/,/g, ", ");
         //messageShow("Got data.", "OK");

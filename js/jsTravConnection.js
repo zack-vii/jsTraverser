@@ -37,11 +37,7 @@ class Connection {
 	    if (this.showTimingFlag) {
 	        console.log("internalQuery: '"+url+"' -> " + status + " '" + xhr.response + "' (" + (Date.now() - time1) + "ms)");
 	    }
-	    if (status == 200) {
-	        callBackF(xhr.response);
-	    } else {
-	        callBackF("ERROR: "+status);
-	    }
+	    callBackF({ "status": xhr.status, "statusText": xhr.statusText, "data": xhr.response });
 	};
 	xhr.send();
     }
@@ -58,11 +54,11 @@ class Connection {
     openConnection(status, callBackF) {
 	var expr = "connect?ip=" + status.serverIpMdsplus;
 	//console.log("open Connection serverIpMdsplus: " + status.serverIpMdsplus + " expr: " + expr);
-	this.internalQuery(status, expr, function( data ) {
+	this.internalQuery(status, expr, function( resp ) {
 	    // alert( "in openConnection: Data " + data );
-	    status.connectionId = parseInt(data);
+	    status.connectionId = parseInt(resp.data);
 	    //this.isOpen = true;
-	    callBackF(data);
+	    callBackF(resp);
         });
     }
 
@@ -73,12 +69,12 @@ class Connection {
 	callBackF("data");
     }
 
-    openTree(status, callBackF) {
+    treeopen(status, callBackF) {
 	status.expressionToEvaluate = "treeopen('" + status.treeName + "',-1)";
-	this.evalExpr(status, status.expressionToEvaluate, function( data ) {
+	this.evalExpr(status, status.expressionToEvaluate, function( resp ) {
             //alert( "Data: " + data );
-            status.evaluatedExpression = data;
-	    callBackF(data);
+            status.evaluatedExpression = resp.data;
+	    callBackF(resp);
         });
     }
 

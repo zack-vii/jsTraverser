@@ -16,6 +16,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+function trimQuotesSpaces(str) {
+    //var retStr = str;
+    //if (retStr == null) return "";
+    //if (retStr[0] == "'") retStr = retStr.slice(1);
+    //if (retStr.slice(-1) == "'") retStr = retStr.slice(0, -1);
+    //return retStr;
+    if (str == null) return "";
+    // trim "'" and " "
+    return str.replace(/^\'+|\'+$/gm,'').replace(/^\s+|\s+$/gm,'');
+}
+
 function convertArrayAsStrToArrayOfStr(str) {
     // input string ['str1','str2',...]
     //console.log(str);
