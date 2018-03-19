@@ -333,26 +333,32 @@ function openTreeButtonClicked() {
 function getDataButtonClicked() {
     //console.log("getDataButtonClicked");
     messageShow("Getting data ... please wait ...", "WAITING");
-    //status.suspendUpdate();
+
+    connection.getAllChildrenMembers(0, null, null, function (nidsArray) {
+	    var data = "[" + nidsArray.join(",") + "]";
+            status.currentTreeData = status.convertArrayOfNidsStrToTreeData(data);
+	    completeNodeInfos(status, connection, data, Status.treeLabelsReturningArray, function (x) {
+	        messageShow("Data fetched.", "OK");
+	        updateTreeAll();
+	        return null;
+	    });	    
+	});
+
+    /*
     status.expressionToEvaluate = "_m = getnci(getnci(0, 'member_nids'), 'nid_number')";
     connection.evalExpr(status, status.expressionToEvaluate, function( resp ) {
 	var data = resp.data;
-        //alert( "Data: " + data );
         status.evaluatedExpression = data; // .substring(1, data.length-1).replace(/,/g, ", ");
-        //messageShow("Got data.", "OK");
-	//ons.notification.alert("DATA: " + data);
-        //console.log(data);
-
         status.currentTreeData = status.convertArrayOfNidsStrToTreeData(data);
 	completeNodeInfos(status, connection, data, Status.treeLabelsReturningArray, function (x) {
-	    //alert("Complete DONE!");
-	    //status.restoreUpdate();
 	    messageShow("Data fetched.", "OK");
 	    updateTreeAll();
 	    return null;
 	});
-
     });
+    */
+
+
 }
 
 

@@ -93,17 +93,19 @@ class Connection {
     getAllChildrenMembers(nid, nChildren, nMembers, callBackF) {
 	// callBackF will accept the array of nids
         var theRequests = [];
-        if (nMembers > 0) {
+        //if (nMembers > 0) {
             theRequests = [ "_m = getnci(getnci(" + nid + ", 'MEMBER_NIDS'), 'NID_NUMBER')" ];
-        }
-        if (nChildren > 0) {
+	//}
+	//if (nChildren > 0) {
             theRequests.push("_m = getnci(getnci(" + nid + ", 'CHILDREN_NIDS'), 'NID_NUMBER')");
-        }
+	//}
 
         this.evalExprMulti(status, this, theRequests, [], function (respArray) {
+	    console.log(respArray);
 	    var nidsArray = [];
 	    var dataArray = respArray.map(function (resp) {return resp.data; } );
 	    for (var i=0; i<dataArray.length; i++) {
+		if (dataArray[i].startsWith("'%")) continue;
 		var aus = convertArrayAsStrToArrayOfInt(dataArray[i]);
 		nidsArray = nidsArray.concat(aus);
 	    } 

@@ -35,7 +35,7 @@ class Status {
 	this.internalConnectionId = -1; // -1 is no connection
 	this.internalExpressionToEvaluate = "2+$PI"; // "2%2B$PI"
 	this.internalEvaluatedExpression = "";
-	this.internalTreeName = "test";
+	this.internalTreeName = "RFX"; // "test";
         this.internalCurrentDetails ="DETAILS";
 	this.internalCurrentTreeData = this.buildDummyTree(0);
 	this.internalUpdateF = new Array();
