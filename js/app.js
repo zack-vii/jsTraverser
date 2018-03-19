@@ -119,7 +119,7 @@ function mergeData(s1, s2) {
     //console.log("mergeData: s1=" + s1 + " s2=" + s2);
     return (s1.slice(0, -1) + "," + s2.slice(1));
 }
-
+/*
 function evaluateMultiExpr(infoskey, requests, retStr, callBackF) {
     var carRequest = requests.shift();
     status.expressionToEvaluate = carRequest;
@@ -136,7 +136,7 @@ function evaluateMultiExpr(infoskey, requests, retStr, callBackF) {
 	    }
 	});
 }
-
+*/
 function getInfoOfNid(status, nid, callBackF) {
     var infoStr = "NO INFO FOR " + nid;
     var infos = status.getNodeFromNid(status.currentTreeData, nid);
@@ -153,16 +153,10 @@ function getInfoOfNid(status, nid, callBackF) {
         messageShow("Fetching subtree ... please wait", "WAITING");
         console.log("Fetching subtree ... please wait", "WAITING");
 
-        var theRequests = [];
-        if (infos.number_of_members > 0) {
-            theRequests = [ "_m = getnci(getnci(" + infos.key + ", 'MEMBER_NIDS'), 'NID_NUMBER')" ];
-        }
-        if (infos.number_of_children > 0) {
-            theRequests.push("_m = getnci(getnci(" + infos.key + ", 'CHILDREN_NIDS'), 'NID_NUMBER')");
-        }
 
-        evaluateMultiExpr(infos.key, theRequests, "[]", function (dataStr) {
+        connection.getAllChildrenMembers(infos.key, infos.number_of_children, infos.number_of_members, function (nidsArray) {
 	    //console.log(dataStr);
+	    var dataStr = "[" + nidsArray.join(",") + "]";
 	    completeNodeInfos(status, connection, dataStr, Status.treeLabelsReturningArray, function (x) {
 		    messageShow("Subtree loaded.", "OK");
 		    //updateTreeAll();

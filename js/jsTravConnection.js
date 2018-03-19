@@ -51,6 +51,21 @@ class Connection {
 	this.internalQuery(status, queryStr, callBackF);
     }
 
+
+    evalExprMulti(status, connection, requests, retArray, callBackF) {
+        status.expressionToEvaluate = requests.shift();
+        this.evalExpr(status, status.expressionToEvaluate, function (resp) {
+	    status.evaluatedExpression = resp.data;
+	    retArray.push(resp);
+	    if (requests.length > 0) {
+		connection.evalExprMulti(status, connection, requests, retArray, callBackF);
+	    } else {
+		callBackF(retArray);
+	    }
+	});
+    }
+
+
     openConnection(status, callBackF) {
 	var expr = "connect?ip=" + status.serverIpMdsplus;
 	//console.log("open Connection serverIpMdsplus: " + status.serverIpMdsplus + " expr: " + expr);
@@ -64,18 +79,38 @@ class Connection {
 
     closeConnection(status, callBackF) {
 	// TODO - now operation is not implemented in mdsIpRest server
-	// this.isOpen = false;
-	// status.connectionId = -1;
-	callBackF("data");
+	callBackF({ "status": 200, "statusText": "OK", "data": "" });
     }
 
     treeopen(status, callBackF) {
 	status.expressionToEvaluate = "treeopen('" + status.treeName + "',-1)";
 	this.evalExpr(status, status.expressionToEvaluate, function( resp ) {
-            //alert( "Data: " + data );
             status.evaluatedExpression = resp.data;
 	    callBackF(resp);
         });
+    }
+
+    getAllChildrenMembers(nid, nChildren, nMembers, callBackF) {
+	// callBackF will accept the array of nids
+        var theRequests = [];
+        if (nMembers > 0) {
+            theRequests = [ "_m = getnci(getnci(" + nid + ", 'MEMBER_NIDS'), 'NID_NUMBER')" ];
+        }
+        if (nChildren > 0) {
+            theRequests.push("_m = getnci(getnci(" + nid + ", 'CHILDREN_NIDS'), 'NID_NUMBER')");
+        }
+
+        this.evalExprMulti(status, this, theRequests, [], function (respArray) {
+	    var nidsArray = [];
+	    var dataArray = respArray.map(function (resp) {return resp.data; } );
+	    for (var i=0; i<dataArray.length; i++) {
+		var aus = convertArrayAsStrToArrayOfInt(dataArray[i]);
+		nidsArray = nidsArray.concat(aus);
+	    } 
+	    var memb = status.convertArrayOfNidsIntToTreeData(nidsArray);
+	    status.updateNodeFromNidAddToChildren(status.currentTreeData, nid, memb);
+	    callBackF(nidsArray);
+	});
     }
 
 }
