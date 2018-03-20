@@ -117,6 +117,9 @@ function getInfoOfNid(status, nid, callBackF) {
         infoStr = "";
         for (let [key, value] of Object.entries(infos)) {
 	    if (key.toString() != 'children') {
+		if (key.toString() == 'fullpath') {
+		    value = trimQuotesSpaces(value).replace(/:/g, " : ").replace(/\./g," . ");
+		}
 	        infoStr = infoStr + key + ": <b>" + value + "</b>,<br>";
 	    }
         }
