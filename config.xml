@@ -11,7 +11,7 @@
   <!-- https://pixabay.com/ -->
   <icon src="img/icon.png" />
 
-  <!-- <preference name="phonegap-version" value="cli-6.5.0" /> -->
+  <!-- <preference name="phonegap-version" value="cli-6.5.0" />  now cli-8.0.0 -->
 
   <access origin="*" /> - a wildcard access tag allows access to all external resource.
   <plugin name="cordova-plugin-whitelist" version="1" />

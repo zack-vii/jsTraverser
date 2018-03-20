@@ -53,7 +53,7 @@ function completeNodeInfos(status, connection, nidsArray, what, cont) {
 
     var carWhat = what.shift(); // now, carWhat is car(what) and what is cdr(what)
    
-    connection.getAttribute(status, nidsArray, carWhat, function (respJson) {
+    getAttribute(status, connection, nidsArray, carWhat, function (respJson) {
             //alert( "Data: " + resp );
             status.evaluatedExpression = respJson.data;      
             carWhat = carWhat.toLowerCase();
@@ -127,7 +127,7 @@ function getInfoOfNid(status, nid, callBackF) {
         //console.log("Fetching subtree ... please wait", "WAITING");
 
 
-        connection.getAllChildrenMembers(status, infos.key, infos.number_of_children, infos.number_of_members, function (nidsArray) {
+        getAllChildrenMembers(status, connection, infos.key, infos.number_of_children, infos.number_of_members, function (nidsArray) {
 		//console.log("REMOVE PASSAGE ARRAY-STR");
 	    completeNodeInfos(status, connection, nidsArray, Status.treeLabelsReturningArray, function (x) {
 		    messageShow("Subtree loaded.", "OK");
@@ -264,6 +264,7 @@ function updateLabels() {
     document.getElementById('MDSIpRestInput').value = status.serverIpMdsIpRest;
     document.getElementById('serverIpMdsplusInput').value = status.serverIpMdsplus;
     document.getElementById('treeNameInput').value = status.treeName;
+    document.getElementById('shotNumberInput').value = status.shotNumber;
     document.getElementById('detailsShowLabel').innerHTML = status.currentDetails;
 }
 
@@ -281,7 +282,7 @@ function connectToMdsplusButtonClicked() {
     //console.log("connectToMdsplusButtonClicked");
     status.serverIpMdsplus = document.getElementById('serverIpMdsplusInput').value;
     messageShow("Opening connection", "WAITING");
-    connection.openConnection(status, function(x) { 
+    openConnection(status, connection, function(x) { 
 	messageShow("Connected", "OK");
         //ons.notification.alert("got " + x); return x; 
 	//messageLogWindow(x);
@@ -291,9 +292,10 @@ function connectToMdsplusButtonClicked() {
 
 function openTreeButtonClicked() {
     //console.log("openTreeButtonClicked");
-    status.treeName = document.getElementById('treeNameInput').value;
+    status.treeName   = document.getElementById('treeNameInput').value;
+    status.shotNumber = document.getElementById('shotNumberInput').value;
     messageShow("Opening tree", "WAITING");
-    connection.treeopen(status, function(x) { 
+    treeopen(status, connection, function(x) { 
 	messageShow("Tree opened", "OK");
         //ons.notification.alert("got " + x); return x; 
 	updateLabels();
@@ -306,7 +308,7 @@ function getDataButtonClicked() {
     //console.log("getDataButtonClicked");
     messageShow("Getting data ... please wait ...", "WAITING");
 
-    connection.getAllChildrenMembers(status, 0, null, null, function (nidsArray) {
+    getAllChildrenMembers(status, connection, 0, null, null, function (nidsArray) {
 	    var data = convertNidsArrayToNidsStr(nidsArray);
             status.currentTreeData = status.convertArrayOfNidsStrToTreeData(data);
 	    completeNodeInfos(status, connection, nidsArray, Status.treeLabelsReturningArray, function (x) {

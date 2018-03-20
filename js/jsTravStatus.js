@@ -36,6 +36,7 @@ class Status {
 	this.internalExpressionToEvaluate = "2+$PI"; // "2%2B$PI"
 	this.internalEvaluatedExpression = "";
 	this.internalTreeName = "RFX"; // "test";
+        this.internalShotNumber = -1;
         this.internalCurrentDetails ="DETAILS";
 	this.internalCurrentTreeData = this.buildDummyTree(0);
 	this.internalUpdateF = new Array();
@@ -91,6 +92,7 @@ class Status {
     get expressionToEvaluate () { return this.internalExpressionToEvaluate; }
     get evaluatedExpression  () { return this.internalEvaluatedExpression; }
     get treeName             () { return this.internalTreeName; }
+    get shotNumber           () { return this.internalShotNumber; }
     get currentDetails       () { return this.internalCurrentDetails; }
     get currentTreeData      () { return this.internalCurrentTreeData; }
     //get currentTreeSource    () { return this.internalCurrentTreeSource; }
@@ -102,6 +104,7 @@ class Status {
     set expressionToEvaluate (x) { this.internalExpressionToEvaluate = x; /*this.update();*/ }
     set evaluatedExpression  (x) { this.internalEvaluatedExpression = x;  /*this.update();*/ }
     set treeName             (x) { this.internalTreeName = x;             /*this.update();*/ }
+    set shotNumber           (x) { this.internalShotNumber = x;           /*this.update();*/ }
     set currentDetails       (x) { this.internalCurrentDetails = x;       /*this.update();*/ }
     set updateF              (x) { this.internalUpdateF = x;              /*this.update();*/ }
     //set currentTreeSource    (x) { this.internalCurrentTreeSource = x;    /*this.update();*/ }
