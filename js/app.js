@@ -46,33 +46,23 @@ function messageShow(str, type) {
     document.getElementById('messageShowLabel').innerText = localStr;
 }
 
-function completeNodeInfos(status, connection, data, what, cont) {
-    console.log("completeNodeInfos IN");
+function completeNodeInfos(status, connection, nidsArray, what, cont) {
+    //console.log("completeNodeInfos IN");
     if ( ! Array.isArray(what)) {  return cont(); }
     if (what.length < 1) { return cont(); }
 
-    // get info and continue on remaining whats
-    var carWhat = what.shift();
-    // now, carWhat is car(what) and what is cdr(what)
-
-    
-    //console.log(convertArrayOfIntToStr(data));
-    status.expressionToEvaluate = "_m = getnci(" + data + ", '" + carWhat + "')";
-    //console.log("completeNodeInfos: expressionToEvaluate: " + status.expressionToEvaluate);
-    connection.evalExpr(status, status.expressionToEvaluate, function( respJson ) {
+    var carWhat = what.shift(); // now, carWhat is car(what) and what is cdr(what)
+   
+    connection.getAttribute(status, nidsArray, carWhat, function (respJson) {
             //alert( "Data: " + resp );
-            status.evaluatedExpression = respJson.data;
-	    //console.log("completeNodeInfos IN got resp for data");
-//console.log(data);
-//console.log(resp);
-		      
+            status.evaluatedExpression = respJson.data;      
             carWhat = carWhat.toLowerCase();
-	    arrayOfNids  = convertArrayAsStrToArrayOfInt(data);
+
 	    arrayOfNames = convertArrayAsStrToArrayOfStr(respJson.data);
-	    if (arrayOfNids.length == arrayOfNames.length) {
+	    if (nidsArray.length == arrayOfNames.length) {
 		for (var i=0; i<arrayOfNames.length; i++) {
 		    status.updateNodeFromNidSetValue(status.currentTreeData, 
-					     arrayOfNids[i], 
+					     nidsArray[i], 
 					     carWhat, arrayOfNames[i]);
 
 		    var ausValue = parseInt(arrayOfNames[i]);
@@ -82,7 +72,7 @@ function completeNodeInfos(status, connection, data, what, cont) {
 			if (ausValue == status.MDSPLUS_CLASS_ARRAY_DESCRIPTOR) {
 			    //console.log("SETTING IIFF class " + arrayOfNames[i]);
 		            status.updateNodeFromNidSetValue(status.currentTreeData, 
-					     arrayOfNids[i], 
+					     nidsArray[i], 
 					     'type', status.DATA_TYPE_ARRAY);
 
 			}
@@ -91,7 +81,7 @@ function completeNodeInfos(status, connection, data, what, cont) {
 			if (ausValue == status.MDSPLUS_USAGE_TEXT) {
 			    //console.log("SETTING IIFF class " + arrayOfNames[i]);
 		            status.updateNodeFromNidSetValue(status.currentTreeData, 
-					     arrayOfNids[i], 
+					     nidsArray[i], 
 					     'type', status.DATA_TYPE_TEXT);
 
 			}
@@ -101,14 +91,14 @@ function completeNodeInfos(status, connection, data, what, cont) {
 		    case 'number_of_members':
 			if (ausValue > 0) {
 		            status.updateNodeFromNidSetValue(status.currentTreeData, 
-					     arrayOfNids[i], 
+					     nidsArray[i], 
 					     'type', status.DATA_TYPE_HASSUBTREE);
 			}
 			break;
 		    }
 		}
 	    }
-            completeNodeInfos(status, connection, data, what, cont);
+            completeNodeInfos(status, connection, nidsArray, what, cont);
         });
 }
 
@@ -119,24 +109,7 @@ function mergeData(s1, s2) {
     //console.log("mergeData: s1=" + s1 + " s2=" + s2);
     return (s1.slice(0, -1) + "," + s2.slice(1));
 }
-/*
-function evaluateMultiExpr(infoskey, requests, retStr, callBackF) {
-    var carRequest = requests.shift();
-    status.expressionToEvaluate = carRequest;
-    connection.evalExpr(status, status.expressionToEvaluate, function( resp ) {
-	    var data = resp.data;
-	    status.evaluatedExpression = data;
-	    var memb = status.convertArrayOfNidsStrToTreeData(data);
-	    status.updateNodeFromNidAddToChildren(status.currentTreeData, infoskey, memb);
-	    retStr = mergeData(retStr, data);
-	    if (requests.length > 0) {
-		evaluateMultiExpr(infoskey, requests, retStr, callBackF);
-	    } else {
-		callBackF(retStr);
-	    }
-	});
-}
-*/
+
 function getInfoOfNid(status, nid, callBackF) {
     var infoStr = "NO INFO FOR " + nid;
     var infos = status.getNodeFromNid(status.currentTreeData, nid);
@@ -151,13 +124,12 @@ function getInfoOfNid(status, nid, callBackF) {
 
     if (infos.number_of_children + infos.number_of_members > 0 && !infos.children) {
         messageShow("Fetching subtree ... please wait", "WAITING");
-        console.log("Fetching subtree ... please wait", "WAITING");
+        //console.log("Fetching subtree ... please wait", "WAITING");
 
 
-        connection.getAllChildrenMembers(infos.key, infos.number_of_children, infos.number_of_members, function (nidsArray) {
-	    //console.log(dataStr);
-	    var dataStr = "[" + nidsArray.join(",") + "]";
-	    completeNodeInfos(status, connection, dataStr, Status.treeLabelsReturningArray, function (x) {
+        connection.getAllChildrenMembers(status, infos.key, infos.number_of_children, infos.number_of_members, function (nidsArray) {
+		//console.log("REMOVE PASSAGE ARRAY-STR");
+	    completeNodeInfos(status, connection, nidsArray, Status.treeLabelsReturningArray, function (x) {
 		    messageShow("Subtree loaded.", "OK");
 		    //updateTreeAll();
 		    callBackF(true, infoStr);
@@ -181,7 +153,7 @@ function treeCallback(key) {
             //console.log("treeCallback: got getInfoOfNid " + infoStr);
 
 
-	    console.log("getInfoOfNid-callback: " + (Date.now() - time1) + "ms");
+	    //console.log("getInfoOfNid-callback: " + (Date.now() - time1) + "ms");
 
 	    if (!status.hasSubTree(key)) {
 		ons.notification.alert(infoStr); 
@@ -198,7 +170,7 @@ function treeCallback(key) {
 	    } else {
 	        var subListId ="subListIdOf" + key;
 		var theSublist = document.getElementById(subListId);
-		console.log("subListId: " + subListId + " theSubList: " + theSublist);
+		//console.log("subListId: " + subListId + " theSubList: " + theSublist);
 		if (theSublist != null) {
 		    theSublist.style.display = (currentFlagIsOpen)?"block":"none";
 		}
@@ -206,7 +178,7 @@ function treeCallback(key) {
 	    }
 	    //console.log("getInfoOfNid-callback-END: " + (Date.now() - time1) + "ms");
 	    updateLabels();
-	    console.log("getInfoOfNid-callback-END: " + (Date.now() - time1) + "ms");
+	    //console.log("getInfoOfNid-callback-END: " + (Date.now() - time1) + "ms");
 	});
 }
 
@@ -268,7 +240,7 @@ function updateSubTree(level, myNode, treeData) {
 }
 
 function updateTreeAll() {
-    console.log("updateTree");
+    //console.log("updateTree");
     var treeData = status.currentTreeData;
     var myNode = document.getElementById("tree");
     var parentNode = myNode.parentNode;
@@ -279,11 +251,11 @@ function updateTreeAll() {
     myNode.id = "tree";
 
     var time1 = Date.now();
-    console.log("updatetreeall1 " + (Date.now() - time1) + "ms");
+    //console.log("updatetreeall1 " + (Date.now() - time1) + "ms");
     updateSubTree(0, myNode, treeData);
     c.appendChild(myNode);
     parentNode.appendChild(c);
-    console.log("updatetreeall2 " + (Date.now() - time1) + "ms");
+    //console.log("updatetreeall2 " + (Date.now() - time1) + "ms");
 }
 
 function updateLabels() {
@@ -334,31 +306,15 @@ function getDataButtonClicked() {
     //console.log("getDataButtonClicked");
     messageShow("Getting data ... please wait ...", "WAITING");
 
-    connection.getAllChildrenMembers(0, null, null, function (nidsArray) {
-	    var data = "[" + nidsArray.join(",") + "]";
+    connection.getAllChildrenMembers(status, 0, null, null, function (nidsArray) {
+	    var data = convertNidsArrayToNidsStr(nidsArray);
             status.currentTreeData = status.convertArrayOfNidsStrToTreeData(data);
-	    completeNodeInfos(status, connection, data, Status.treeLabelsReturningArray, function (x) {
+	    completeNodeInfos(status, connection, nidsArray, Status.treeLabelsReturningArray, function (x) {
 	        messageShow("Data fetched.", "OK");
 	        updateTreeAll();
 	        return null;
 	    });	    
 	});
-
-    /*
-    status.expressionToEvaluate = "_m = getnci(getnci(0, 'member_nids'), 'nid_number')";
-    connection.evalExpr(status, status.expressionToEvaluate, function( resp ) {
-	var data = resp.data;
-        status.evaluatedExpression = data; // .substring(1, data.length-1).replace(/,/g, ", ");
-        status.currentTreeData = status.convertArrayOfNidsStrToTreeData(data);
-	completeNodeInfos(status, connection, data, Status.treeLabelsReturningArray, function (x) {
-	    messageShow("Data fetched.", "OK");
-	    updateTreeAll();
-	    return null;
-	});
-    });
-    */
-
-
 }
 
 

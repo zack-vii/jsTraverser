@@ -90,7 +90,7 @@ class Connection {
         });
     }
 
-    getAllChildrenMembers(nid, nChildren, nMembers, callBackF) {
+    getAllChildrenMembers(status, nid, nChildren, nMembers, callBackF) {
 	// callBackF will accept the array of nids
         var theRequests = [];
         //if (nMembers > 0) {
@@ -101,7 +101,7 @@ class Connection {
 	//}
 
         this.evalExprMulti(status, this, theRequests, [], function (respArray) {
-	    console.log(respArray);
+		//console.log(respArray);
 	    var nidsArray = [];
 	    var dataArray = respArray.map(function (resp) {return resp.data; } );
 	    for (var i=0; i<dataArray.length; i++) {
@@ -113,6 +113,13 @@ class Connection {
 	    status.updateNodeFromNidAddToChildren(status.currentTreeData, nid, memb);
 	    callBackF(nidsArray);
 	});
+    }
+
+    getAttribute(status, nidsArray, what, callBackF) {   
+	status.expressionToEvaluate = "_m = getnci(" + convertNidsArrayToNidsStr(nidsArray) + ", '" + what + "')";
+	this.evalExpr(status, status.expressionToEvaluate, function (resp) {
+		callBackF(resp);
+	    });
     }
 
 }

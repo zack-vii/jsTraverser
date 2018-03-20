@@ -49,3 +49,9 @@ function convertArrayOfIntToStr(x) {
     return("["+x.join(",")+"]");
 }
 
+function convertNidsArrayToNidsStr(arr) {
+    if (arr == null) {
+	return "";
+    }
+    return ("[" + arr.join(",") + "]");
+}
