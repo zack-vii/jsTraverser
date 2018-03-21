@@ -71,7 +71,7 @@ class Status {
 	// mostly from https://pixabay.com
 	this.internalArrayOfIcons = [];
 	this.internalArrayOfIcons[0] = "img/transparent.svg";
-	this.internalArrayOfIcons[this.DATA_TYPE_HASSUBTREE] = "img/folderClosedDisabled";
+	this.internalArrayOfIcons[this.DATA_TYPE_HASSUBTREE] = "img/folderClosedDisabled.svg";
 	this.internalArrayOfIcons[this.DATA_TYPE_ARRAY] = "img/graph.svg";
 
 	this.internalArrayOfIcons[this.DATA_TYPE_STRUCTURE] = "img/graphene.svg";
@@ -80,7 +80,7 @@ class Status {
 	this.internalArrayOfIcons[this.DATA_TYPE_DISPATCH] = "img/arrows.svg";
 	this.internalArrayOfIcons[this.DATA_TYPE_NUMBER]  = "img/digital.svg";
 	this.internalArrayOfIcons[this.DATA_TYPE_SIGNAL]  = "img/frequency.svg";
-	this.internalArrayOfIcons[this.DATA_TYPE_TASK]    = "img/t.svg";
+	this.internalArrayOfIcons[this.DATA_TYPE_TASK]    = "img/letter.svg";
 	this.internalArrayOfIcons[this.DATA_TYPE_TEXT]    = "img/document.svg";
 	this.internalArrayOfIcons[this.DATA_TYPE_WINDOW]  = "img/vector-frame.svg";
 	this.internalArrayOfIcons[this.DATA_TYPE_AXIS]    = "img/rotate.svg";
