@@ -68,39 +68,21 @@ function completeNodeInfos(status, connection, nidsArray, what, cont) {
 		    var ausValue = parseInt(arrayOfNames[i]);
 
 		    switch (carWhat) {
-		    case 'class':
-			if (ausValue == status.MDSPLUS_CLASS_ARRAY_DESCRIPTOR) {
-			    //console.log("SETTING IIFF class " + arrayOfNames[i]);
-		            status.updateNodeFromNidSetValue(status.currentTreeData, 
-					     nidsArray[i], 
-					     'type', status.DATA_TYPE_ARRAY);
-
-			}
-			break;
+			//case 'class':
+			//if (ausValue == status.MDSPLUS_CLASS_ARRAY_DESCRIPTOR) {
+			//    //console.log("SETTING IIFF class " + arrayOfNames[i]);
+		        //    status.updateNodeFromNidSetValue(status.currentTreeData, 
+			//		     nidsArray[i], 
+			//		     'type', status.DATA_TYPE_ARRAY);
+			//
+			//}
+			//break;
 		    case 'usage':
 			//console.log("SETTING IIFF class " + arrayOfNames[i]);
-			switch (ausValue) {
-			case status.MDSPLUS_USAGE_ACTION:
-		            status.updateNodeFromNidSetValue(status.currentTreeData, 
-					     nidsArray[i], 
-					     'type', status.DATA_TYPE_ACTION);
-			    break;
-			case status.MDSPLUS_USAGE_TEXT:
-		            status.updateNodeFromNidSetValue(status.currentTreeData, 
-					     nidsArray[i], 
-					     'type', status.DATA_TYPE_TEXT);
-			    break;
-			case status.MDSPLUS_USAGE_NUMBER:
-		            status.updateNodeFromNidSetValue(status.currentTreeData, 
-					     nidsArray[i], 
-					     'type', status.DATA_TYPE_NUMBER);
-			    break;
-			case status.MDSPLUS_USAGE_SIGNAL:
-		            status.updateNodeFromNidSetValue(status.currentTreeData, 
-					     nidsArray[i], 
-					     'type', status.DATA_TYPE_SIGNAL);
-			    break;
-			} // switch ausValue
+			status.updateNodeFromNidSetValue(status.currentTreeData, 
+							 nidsArray[i], 
+							 'type', 
+							 status.getDataTypeFromUsage(ausValue));
 			break;
 		    
 		    case 'number_of_children':

@@ -19,29 +19,72 @@
 class Status {
 
     constructor() {
-	this.internalMDSPLUS_CLASS_ARRAY_DESCRIPTOR = 4;
+	this.MDSPLUS_CLASS_ARRAY_DESCRIPTOR = 4;
 
-	this.internalMDSPLUS_USAGE_ACTION = 2;
-	this.internalMDSPLUS_USAGE_NUMBER = 5;
-	this.internalMDSPLUS_USAGE_SIGNAL = 6;
-	this.internalMDSPLUS_USAGE_TEXT = 8;
+	// data types (roserver):
+	// /usr/local/mdsplus/include/usagedef.h
+	// /usr/local/mdsplus/include/mdsdescrip.h
 
-	this.internalDATA_TYPE_HASSUBTREE = 16;
-	this.internalDATA_TYPE_ARRAY  = 32;
-	this.internalDATA_TYPE_TEXT   = 33;
-	this.internalDATA_TYPE_NUMBER = 34;
-	this.internalDATA_TYPE_ACTION = 35;
-	this.internalDATA_TYPE_SIGNAL = 36;
+	this.MDSPLUS_USAGE_ANY       = 0;
+	this.MDSPLUS_USAGE_STRUCTURE = 1;
+	this.MDSPLUS_USAGE_ACTION    = 2;
+	this.MDSPLUS_USAGE_DEVICE    = 3;
+	this.MDSPLUS_USAGE_DISPATCH  = 4;
+	this.MDSPLUS_USAGE_NUMBER    = 5;
+	this.MDSPLUS_USAGE_SIGNAL    = 6;
+	this.MDSPLUS_USAGE_TASK      = 7;
+	this.MDSPLUS_USAGE_TEXT      = 8;
+	this.MDSPLUS_USAGE_WINDOW    = 9;
+	this.MDSPLUS_USAGE_AXIS      = 10;
+	this.MDSPLUS_USAGE_SUBTREE   = 11;
+
+	this.DATA_TYPE_NULL       = 0;
+	this.DATA_TYPE_ARRAY      = 8;
+	this.DATA_TYPE_HASSUBTREE = 16;
+
+	this.DATA_TYPE_STRUCTURE  = 32; 
+	this.DATA_TYPE_ACTION     = 33;
+	this.DATA_TYPE_DEVICE     = 34;
+	this.DATA_TYPE_DISPATCH   = 35;
+	this.DATA_TYPE_NUMBER     = 36;
+	this.DATA_TYPE_SIGNAL     = 37;
+	this.DATA_TYPE_TASK       = 38;
+	this.DATA_TYPE_TEXT       = 39;
+	this.DATA_TYPE_WINDOW     = 40;
+	this.DATA_TYPE_AXIS       = 41;
+	this.DATA_TYPE_SUBTREE    = 42;
+
+	this.internalArrayOfDataTypeFromUsage = [];
+	this.internalArrayOfDataTypeFromUsage[0]                           = this.DATA_TYPE_NULL;
+	this.internalArrayOfDataTypeFromUsage[this.MDSPLUS_USAGE_STRUCTURE]= this.DATA_TYPE_STRUCTURE;
+	this.internalArrayOfDataTypeFromUsage[this.MDSPLUS_USAGE_ACTION]   = this.DATA_TYPE_ACTION;
+	this.internalArrayOfDataTypeFromUsage[this.MDSPLUS_USAGE_DEVICE]   = this.DATA_TYPE_DEVICE;
+	this.internalArrayOfDataTypeFromUsage[this.MDSPLUS_USAGE_DISPATCH] = this.DATA_TYPE_DISPATCH;
+	this.internalArrayOfDataTypeFromUsage[this.MDSPLUS_USAGE_NUMBER]   = this.DATA_TYPE_NUMBER;
+	this.internalArrayOfDataTypeFromUsage[this.MDSPLUS_USAGE_SIGNAL]   = this.DATA_TYPE_SIGNAL;
+	this.internalArrayOfDataTypeFromUsage[this.MDSPLUS_USAGE_TASK]     = this.DATA_TYPE_TASK;
+	this.internalArrayOfDataTypeFromUsage[this.MDSPLUS_USAGE_TEXT]     = this.DATA_TYPE_TEXT;
+	this.internalArrayOfDataTypeFromUsage[this.MDSPLUS_USAGE_WINDOW]   = this.DATA_TYPE_WINDOW;
+	this.internalArrayOfDataTypeFromUsage[this.MDSPLUS_USAGE_AXIS]     = this.DATA_TYPE_AXIS;
+	this.internalArrayOfDataTypeFromUsage[this.MDSPLUS_USAGE_SUBTREE]  = this.DATA_TYPE_SUBTREE;
 
 	// mostly from https://pixabay.com
 	this.internalArrayOfIcons = [];
 	this.internalArrayOfIcons[0] = "img/transparent.svg";
-	this.internalArrayOfIcons[this.internalDATA_TYPE_HASSUBTREE] = "img/folderClosedDisabled";
-	this.internalArrayOfIcons[this.internalDATA_TYPE_ARRAY] = "img/graph.svg";
-	this.internalArrayOfIcons[this.internalDATA_TYPE_TEXT] = "img/document.svg";
-	this.internalArrayOfIcons[this.internalDATA_TYPE_NUMBER] = "img/digital.svg";
-	this.internalArrayOfIcons[this.internalDATA_TYPE_ACTION] = "img/hand.svg";
-	this.internalArrayOfIcons[this.internalDATA_TYPE_SIGNAL] = "img/frequency.svg";
+	this.internalArrayOfIcons[this.DATA_TYPE_HASSUBTREE] = "img/folderClosedDisabled";
+	this.internalArrayOfIcons[this.DATA_TYPE_ARRAY] = "img/graph.svg";
+
+	this.internalArrayOfIcons[this.DATA_TYPE_STRUCTURE] = "img/graphene.svg";
+	this.internalArrayOfIcons[this.DATA_TYPE_ACTION]    = "img/hand.svg";
+	this.internalArrayOfIcons[this.DATA_TYPE_DEVICE]    = "img/disk.svg";
+	this.internalArrayOfIcons[this.DATA_TYPE_DISPATCH] = "img/arrows.svg";
+	this.internalArrayOfIcons[this.DATA_TYPE_NUMBER]  = "img/digital.svg";
+	this.internalArrayOfIcons[this.DATA_TYPE_SIGNAL]  = "img/frequency.svg";
+	this.internalArrayOfIcons[this.DATA_TYPE_TASK]    = "img/t.svg";
+	this.internalArrayOfIcons[this.DATA_TYPE_TEXT]    = "img/document.svg";
+	this.internalArrayOfIcons[this.DATA_TYPE_WINDOW]  = "img/vector-frame.svg";
+	this.internalArrayOfIcons[this.DATA_TYPE_AXIS]    = "img/rotate.svg";
+	this.internalArrayOfIcons[this.DATA_TYPE_SUBTREE] = "img/folderClosedDisabled.svg";
 
 	//this.doingUpdate = true;
 	//this.internalServerIpMdsIpRest = "localhost:8081";
@@ -95,19 +138,6 @@ class Status {
 	return(this.convertArrayOfNidsIntToTreeData(data));
     }
 
-    get MDSPLUS_CLASS_ARRAY_DESCRIPTOR () { return this.internalMDSPLUS_CLASS_ARRAY_DESCRIPTOR; }
-    get MDSPLUS_USAGE_ACTION () { return this.internalMDSPLUS_USAGE_ACTION; }
-    get MDSPLUS_USAGE_TEXT () { return this.internalMDSPLUS_USAGE_TEXT; }
-    get MDSPLUS_USAGE_SIGNAL () { return this.internalMDSPLUS_USAGE_SIGNAL; }
-    get MDSPLUS_USAGE_NUMBER () { return this.internalMDSPLUS_USAGE_NUMBER; }
-
-    get DATA_TYPE_HASSUBTREE () { return this.internalDATA_TYPE_HASSUBTREE; }
-    get DATA_TYPE_ARRAY      () { return this.internalDATA_TYPE_ARRAY; }
-    get DATA_TYPE_TEXT       () { return this.internalDATA_TYPE_TEXT; }
-    get DATA_TYPE_NUMBER     () { return this.internalDATA_TYPE_NUMBER; }
-    get DATA_TYPE_ACTION     () { return this.internalDATA_TYPE_ACTION; }
-    get DATA_TYPE_SIGNAL     () { return this.internalDATA_TYPE_SIGNAL; }
-
     get serverIpMdsIpRest    () { return this.internalServerIpMdsIpRest; }
     get serverIpMdsplus      () { return this.internalServerIpMdsplus; }
     get connectionId         () { return this.internalConnectionId; }
@@ -137,13 +167,12 @@ class Status {
     }
 
     getIconForDataType (x) {	
-	if (x in this.internalArrayOfIcons) {
-	    return this.internalArrayOfIcons[x];
-	} else {
-	    return this.internalArrayOfIcons[0];
-	}
+	return this.internalArrayOfIcons[(x in this.internalArrayOfIcons)?x:0];
     }
 
+    getDataTypeFromUsage(x) {
+	return this.internalArrayOfDataTypeFromUsage[(x in this.internalArrayOfDataTypeFromUsage)?x:0];
+    }
 
     addUpdateF(f) {
 	this.internalUpdateF.push(f);
