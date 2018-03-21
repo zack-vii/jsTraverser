@@ -78,13 +78,29 @@ function completeNodeInfos(status, connection, nidsArray, what, cont) {
 			}
 			break;
 		    case 'usage':
-			if (ausValue == status.MDSPLUS_USAGE_TEXT) {
-			    //console.log("SETTING IIFF class " + arrayOfNames[i]);
+			//console.log("SETTING IIFF class " + arrayOfNames[i]);
+			switch (ausValue) {
+			case status.MDSPLUS_USAGE_ACTION:
+		            status.updateNodeFromNidSetValue(status.currentTreeData, 
+					     nidsArray[i], 
+					     'type', status.DATA_TYPE_ACTION);
+			    break;
+			case status.MDSPLUS_USAGE_TEXT:
 		            status.updateNodeFromNidSetValue(status.currentTreeData, 
 					     nidsArray[i], 
 					     'type', status.DATA_TYPE_TEXT);
-
-			}
+			    break;
+			case status.MDSPLUS_USAGE_NUMBER:
+		            status.updateNodeFromNidSetValue(status.currentTreeData, 
+					     nidsArray[i], 
+					     'type', status.DATA_TYPE_NUMBER);
+			    break;
+			case status.MDSPLUS_USAGE_SIGNAL:
+		            status.updateNodeFromNidSetValue(status.currentTreeData, 
+					     nidsArray[i], 
+					     'type', status.DATA_TYPE_SIGNAL);
+			    break;
+			} // switch ausValue
 			break;
 		    
 		    case 'number_of_children':
@@ -189,30 +205,16 @@ function updateSubTree(level, myNode, treeData) {
     for (var i=0; i<treeData.length; i++) {
 	// update list removed tappable
 	var itemId = "itemid" + treeData[i].key;
-	var iconName;
 
-	switch (treeData[i].type) {
-	case status.DATA_TYPE_ARRAY:
-	    iconName = "img/graph.svg";
-	    break;
-	case status.DATA_TYPE_TEXT:
-	    iconName = "img/document.svg";
-	    break;
-	case status.DATA_TYPE_HASSUBTREE:
+	var iconName = status.getIconForDataType(treeData[i].type);
+
+	if (treeData[i].type == status.DATA_TYPE_HASSUBTREE) {
 	    if (treeData[i].children == null) {
 		iconName = "img/folderClosedDisabled.svg";
 	    } else {
 		iconName = "img/folderOpen.svg";
 	    }
-	    break;
-	default:
-	    iconName = "img/transparent.svg";
 	}
-
-	//if (status.hasSubTreeNode(treeData[i])) {
-	//    iconName = "img/folder.svg";
-	//}
-
 	
         var taskItem = ons.createElement(
             '<ons-list-item id="' + itemId + '">' +  

@@ -20,12 +20,28 @@ class Status {
 
     constructor() {
 	this.internalMDSPLUS_CLASS_ARRAY_DESCRIPTOR = 4;
+
+	this.internalMDSPLUS_USAGE_ACTION = 2;
+	this.internalMDSPLUS_USAGE_NUMBER = 5;
+	this.internalMDSPLUS_USAGE_SIGNAL = 6;
 	this.internalMDSPLUS_USAGE_TEXT = 8;
 
 	this.internalDATA_TYPE_HASSUBTREE = 16;
-	this.internalDATA_TYPE_ARRAY = 32;
-	this.internalDATA_TYPE_TEXT = 33;
+	this.internalDATA_TYPE_ARRAY  = 32;
+	this.internalDATA_TYPE_TEXT   = 33;
+	this.internalDATA_TYPE_NUMBER = 34;
+	this.internalDATA_TYPE_ACTION = 35;
+	this.internalDATA_TYPE_SIGNAL = 36;
 
+	// mostly from https://pixabay.com
+	this.internalArrayOfIcons = [];
+	this.internalArrayOfIcons[0] = "img/transparent.svg";
+	this.internalArrayOfIcons[this.internalDATA_TYPE_HASSUBTREE] = "img/folderClosedDisabled";
+	this.internalArrayOfIcons[this.internalDATA_TYPE_ARRAY] = "img/graph.svg";
+	this.internalArrayOfIcons[this.internalDATA_TYPE_TEXT] = "img/document.svg";
+	this.internalArrayOfIcons[this.internalDATA_TYPE_NUMBER] = "img/digital.svg";
+	this.internalArrayOfIcons[this.internalDATA_TYPE_ACTION] = "img/hand.svg";
+	this.internalArrayOfIcons[this.internalDATA_TYPE_SIGNAL] = "img/frequency.svg";
 
 	//this.doingUpdate = true;
 	//this.internalServerIpMdsIpRest = "localhost:8081";
@@ -80,11 +96,17 @@ class Status {
     }
 
     get MDSPLUS_CLASS_ARRAY_DESCRIPTOR () { return this.internalMDSPLUS_CLASS_ARRAY_DESCRIPTOR; }
+    get MDSPLUS_USAGE_ACTION () { return this.internalMDSPLUS_USAGE_ACTION; }
     get MDSPLUS_USAGE_TEXT () { return this.internalMDSPLUS_USAGE_TEXT; }
+    get MDSPLUS_USAGE_SIGNAL () { return this.internalMDSPLUS_USAGE_SIGNAL; }
+    get MDSPLUS_USAGE_NUMBER () { return this.internalMDSPLUS_USAGE_NUMBER; }
 
     get DATA_TYPE_HASSUBTREE () { return this.internalDATA_TYPE_HASSUBTREE; }
     get DATA_TYPE_ARRAY      () { return this.internalDATA_TYPE_ARRAY; }
     get DATA_TYPE_TEXT       () { return this.internalDATA_TYPE_TEXT; }
+    get DATA_TYPE_NUMBER     () { return this.internalDATA_TYPE_NUMBER; }
+    get DATA_TYPE_ACTION     () { return this.internalDATA_TYPE_ACTION; }
+    get DATA_TYPE_SIGNAL     () { return this.internalDATA_TYPE_SIGNAL; }
 
     get serverIpMdsIpRest    () { return this.internalServerIpMdsIpRest; }
     get serverIpMdsplus      () { return this.internalServerIpMdsplus; }
@@ -113,6 +135,15 @@ class Status {
 	//this.internalCurrentTreeSource = this.convertTreeDataToTreeSource(x);
 	//this.update(); 
     }
+
+    getIconForDataType (x) {	
+	if (x in this.internalArrayOfIcons) {
+	    return this.internalArrayOfIcons[x];
+	} else {
+	    return this.internalArrayOfIcons[0];
+	}
+    }
+
 
     addUpdateF(f) {
 	this.internalUpdateF.push(f);
@@ -155,6 +186,7 @@ class Status {
     }
 
     updateNodeFromNidSetValue(theTree, nid, fieldName, fieldValue) {
+	//console.log("updateNodeFromNidSetValue: fieldName=" + fieldName + " fieldValue=" + fieldValue);
 	return this.updateNodeFromNid(theTree, nid, fieldName, function(x) { return fieldValue; });
     }
 
