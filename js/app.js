@@ -25,37 +25,38 @@ let status = new Status();
 let statusOld = null;
 let connection = new Connection();
 
+let wsConnection = null;
+
+function startWebsocket() {
 //let wsConnection = new WebSocket('ws://192.168.55.251:8088/');
-let wsConnection = new WebSocket('ws://www1.igi.cnr.it:8088/');
-console.log(wsConnection);
-wsConnection.onopen = function(event) {
-    //console.log("onopen");
-    //document.getElementById("wsoutput").innerHTML = "OPEN";
-    //document.getElementById("wsoutput").style = "background-color:LawnGreen;";
-};
+    wsConnection = new WebSocket('ws://www1.igi.cnr.it:8088/');
+    wsConnection.onopen = function(event) {
+	//console.log("onopen");
+	//document.getElementById("wsoutput").innerHTML = "OPEN";
+	//document.getElementById("wsoutput").style = "background-color:LawnGreen;";
+    };
 
-wsConnection.onerror = function(event) {
-    //console.log("onerror");
-    //document.getElementById("wsoutput").innerHTML = "ERROR";
-    //document.getElementById("wsoutput").style = "background-color:Red;";
-};
+    wsConnection.onerror = function(event) {
+	//console.log("onerror");
+	//document.getElementById("wsoutput").innerHTML = "ERROR";
+	//document.getElementById("wsoutput").style = "background-color:Red;";
+    };
 
-wsConnection.onmessage = function(event) {
-    //console.log("onmessage");
-
-    if (document.getElementById("wsoutput")==null)
-	return;
-    str = event.data;
-    theNumber = parseInt(str.match(/\d+/));
-    document.getElementById("wsoutput").innerHTML = str;
-    if (theNumber % 2) {
-	document.getElementById("wsoutput").style = "background-color:LawnGreen;";
-    } else {
-	document.getElementById("wsoutput").style = "background-color:Red;";
-    }
-};
-
-
+    wsConnection.onmessage = function(event) {
+	//console.log("onmessage");
+	
+	if (document.getElementById("wsoutput")==null)
+	    return;
+	str = event.data;
+	theNumber = parseInt(str.match(/\d+/));
+	document.getElementById("wsoutput").innerHTML = str;
+	if (theNumber % 2) {
+	    document.getElementById("wsoutput").style = "background-color:LawnGreen;";
+	} else {
+	    document.getElementById("wsoutput").style = "background-color:Red;";
+	}
+    };
+}
 
 function messageLogWindow(str) {
     //document.getElementById('logWindow').innerText = str;
@@ -305,6 +306,9 @@ function connectToMdsplusButtonClicked() {
 	messageShow("Connected", "OK");
         //ons.notification.alert("got " + x); return x; 
 	//messageLogWindow(x);
+
+	startWebsocket();
+
 	updateLabels();
     });
 }
