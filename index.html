@@ -40,29 +40,52 @@
   <template id="splitter.html">
     <ons-page>
 
-      <ons-if platform="android ios">  
+	<!-- attribute can be: collapse or split -->
+<!--
       <ons-splitter id="mySplitter">
         <ons-splitter-side page="html/menu.html" swipeable width="250px" collapse swipe-target-width="50px">
         </ons-splitter-side>
         <ons-splitter-content page="tabbar.html">
         </ons-splitter-content>
       </ons-splitter>
-      </ons-if>
+-->
 
       <ons-if platform="other">  
-      <ons-splitter id="mySplitter">
-        <ons-splitter-side page="html/menu.html" swipeable width="250px" collapse swipe-target-width="50px">
-        </ons-splitter-side>
-        <ons-splitter-content page="tabbar.html">
-        </ons-splitter-content>
-      </ons-splitter>
-      </ons-if>
+        <ons-splitter id="mySplitter">
+          <ons-splitter-side page="html/status.html" swipeable width="33%" split swipe-target-width="50px">
+          </ons-splitter-side>
+          <ons-splitter-content>
+            <ons-splitter id="mySplitter2">
+              <ons-splitter-side page="html/details.html" swipeable width="50%" split side=right>
+              </ons-splitter-side>
+              <ons-splitter-content page="html/tree.html">
+              </ons-splitter-content>
+            </ons-splitter>
+          </ons-splitter-content>
+        </ons-splitter>
+      </ons-if> 
+
+      <ons-if platform="android ios">  
+        <ons-splitter id="mySplitter">
+          <ons-splitter-side page="html/status.html"swipeable width="250px" collapse swipe-target-width="50px">
+          </ons-splitter-side>
+          <ons-splitter-content>
+            <ons-splitter id="mySplitter2">
+              <ons-splitter-side page="html/details.html" swipeable width="250px" collapse side=right>
+              </ons-splitter-side>
+              <ons-splitter-content page="html/tree.html">
+              </ons-splitter-content>
+            </ons-splitter>
+          </ons-splitter-content>
+        </ons-splitter>
+      </ons-if> 
 
 
     </ons-page>
   </template>
 
   <!-- Third navigation component: Tabbar. This will disappear if the first or second components change their content. -->
+<!--
   <template id="tabbar.html">
     <ons-page id="tabbarPage">
       <ons-toolbar>
@@ -71,19 +94,13 @@
             <ons-icon icon="ion-navicon, material:md-menu" size="32px, material:24px"></ons-icon>
           </ons-toolbar-button>
           jsTraverser
-        </div> <!-- WAS center -->
-        <div class="center"> <!-- WAS toolbar__right -->
+        </div> 
+        <div class="center"> 
 	  <span id="wsoutput">WS</span>
           <span id="messageShowLabel" class="toolbar-button toolbar-button--outline" style="width: 50%; background-color: Yellow;">NOT CONNECTED</span>
         </div>
       </ons-toolbar>
-<!--
-      <ons-toolbar>
-        <div id="logWindow" style="text-align: left; margin-top: 10px;">Debug messages</div>
-      </ons-toolbar>
--->
 
-      <!-- Auto-positioned Tabbar: top on Android, bottom on iOS/other. -->
       <ons-tabbar id="myTabbar" position="auto">
         <ons-tab page="html/status.html" label="Status" active>
         </ons-tab>
@@ -94,16 +111,7 @@
       </ons-tabbar>
     </ons-page>
   </template>
-
-  <template id="columns.html">
-    <ons-page>
-      <ons-row>
-        <ons-col>Text1</ons-col>
-        <ons-col>Text2</ons-col>
-        <ons-col>Text3</ons-col>
-      </ons-row>
-    </ons-page>
-  </template>
+-->
 
 </body>
 

@@ -1,6 +1,12 @@
 <ons-page id="treePage">
 
-  <ons-list-title><div align="center">MDSplus tree data</div></ons-list-title>
+  <div style="margin-top: 10px">
+    <ons-if platform="android ios">  
+    <div style="display:inline-block; float:left"><ons-icon icon="ion-arrow-right-c" size="32px"></ons-icon></div>
+    <div style="display:inline-block; float:right"><ons-icon icon="ion-arrow-left-c" size="32px"></ons-icon></div>
+    </ons-if>
+    <div align="center">jsTraverser for MDSplus tree</div>
+  </div>
 
   <ons-list id="tree">
   </ons-list>
