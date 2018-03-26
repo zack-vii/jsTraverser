@@ -17,14 +17,17 @@
  */
 
 function trimQuotesSpaces(str) {
+    // trim "'" and " "
     //var retStr = str;
     //if (retStr == null) return "";
     //if (retStr[0] == "'") retStr = retStr.slice(1);
     //if (retStr.slice(-1) == "'") retStr = retStr.slice(0, -1);
     //return retStr;
     if (str == null) return "";
-    // trim "'" and " "
-    return str.replace(/^\'+|\'+$/gm,'').replace(/^\s+|\s+$/gm,'');
+    if ((typeof str) == "string")
+	return str.replace(/^\'+|\'+$/gm,'').replace(/^\s+|\s+$/gm,'');
+    else
+	return str;
 }
 
 function convertArrayAsStrToArrayOfStr(str) {

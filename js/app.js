@@ -150,10 +150,11 @@ function getInfoOfNid(status, nid, callBackF) {
         infoStr = "";
         for (let [key, value] of Object.entries(infos)) {
 	    if (key.toString() != 'children') {
-		if (key.toString() == 'fullpath') {
-		    value = trimQuotesSpaces(value).replace(/:/g, " : ").replace(/\./g," . ");
-		}
-	        infoStr = infoStr + key + ": <b>" + value + "</b>,<br>";
+		//if (key.toString() == 'fullpath') {
+		//    value = trimQuotesSpaces(value).replace(/:/g, " : ").replace(/\./g," . ");
+		//}
+		value = trimQuotesSpaces(value);
+	        infoStr = infoStr + '<div style="margin-left: 10px; word-break: break-all; word-wrap: break-word;">' + key + ": <b>" + value + "</b></div>";
 	    }
         }
     }
