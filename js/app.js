@@ -290,6 +290,12 @@ function updateTreeAll() {
 	    '<ons-if platform="android ios">' +
 	     '<ons-list-item><div class="right">DETAILS PAGE</div></ons-list-item>' +
             '</ons-if>'));
+        myNode.appendChild(ons.createElement(
+            '<ons-list-item>' +  
+              '<div style="text-align:center">' +
+                '<img style="width:80%" src="img/icon.png"></img>' +
+              '</div>' +
+            '</ons-list-item>'));
 	//console.log(treeData);
     }
 
