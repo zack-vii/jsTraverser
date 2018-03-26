@@ -270,7 +270,27 @@ function updateTreeAll() {
     myNode = document.createElement("ons-list");
     myNode.id = "tree";
 
-    var time1 = Date.now();
+    if (treeData.length == 0) {
+        myNode.appendChild(ons.createElement(
+	    '<ons-if platform="android ios">' +
+	    '<ons-list-item><div class="left">SWIPE LEFT FOR</div></ons-list-item>' +
+            '</ons-if>'));
+        myNode.appendChild(ons.createElement(
+	    '<ons-if platform="android ios">' +
+            '<ons-list-item><div class="left">OPERATION PAGE</div></ons-list-item>' +
+            '</ons-if>'));
+        myNode.appendChild(ons.createElement(
+	    '<ons-if platform="android ios">' +
+	     '<ons-list-item><div class="right">SWIPE RIGHT FOR</div></ons-list-item>' +
+            '</ons-if>'));
+        myNode.appendChild(ons.createElement(
+	    '<ons-if platform="android ios">' +
+	     '<ons-list-item><div class="right">DETAILS PAGE</div></ons-list-item>' +
+            '</ons-if>'));
+	//console.log(treeData);
+    }
+
+    //var time1 = Date.now();
     //console.log("updatetreeall1 " + (Date.now() - time1) + "ms");
     updateSubTree(0, myNode, treeData);
     c.appendChild(myNode);
