@@ -327,7 +327,7 @@ function connectToMdsplusButtonClicked() {
         //ons.notification.alert("got " + x); return x; 
 	//messageLogWindow(x);
 
-	startWebsocket();
+	//startWebsocket();
 
 	updateLabels();
     });
