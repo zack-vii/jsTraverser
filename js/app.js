@@ -27,9 +27,11 @@ let connection = new Connection();
 
 let wsConnection = null;
 
-function startWebsocket() {
-//let wsConnection = new WebSocket('ws://192.168.55.251:8088/');
-    wsConnection = new WebSocket('ws://www1.igi.cnr.it:8088/');
+function startWebsocket(url) {
+    //let wsConnection = new WebSocket('ws://192.168.55.251:8088/'); // my dummy test
+    //let wsConnection = new WebSocket('ws://www1.igi.cnr.it:8088/'); // my dummy test
+    //let wsConnection = new WebSocket('ws://www1.igi.cnr.it:8081/');
+    let wsConnection = new WebSocket('ws://' + url);
     wsConnection.onopen = function(event) {
 	//console.log("onopen");
 	//document.getElementById("wsoutput").innerHTML = "OPEN";
@@ -327,7 +329,7 @@ function connectToMdsplusButtonClicked() {
         //ons.notification.alert("got " + x); return x; 
 	//messageLogWindow(x);
 
-	//startWebsocket();
+	startWebsocket(status.serverIpMdsIpRest);
 
 	updateLabels();
     });
