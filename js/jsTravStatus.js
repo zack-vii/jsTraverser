@@ -99,7 +99,14 @@ class Status {
         this.internalCurrentDetails ="DETAILS";
 	this.internalCurrentTreeData = this.buildDummyTree(0);
 	this.internalUpdateF = new Array();
+
+	this.WS_EVENTS = [ { name: "Event1" },
+			   { name: "Event2" },
+			   { name: "Event3" } 
+			 ];
     }
+
+
 
     static get treeLabelsReturningArray() {
 	return ["node_name", "fullpath", "class", "dtype", "usage", // "minpath", "path",

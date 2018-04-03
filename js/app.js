@@ -20,17 +20,35 @@
 window.myApp = {};
 
 // global initialization
-console.log("Global initialization");
+//console.log("Global initialization");
 let status = new Status();
 let statusOld = null;
 let connection = new Connection();
 
 let wsConnection = null;
 
-function startWebsocket(url) {
+function startWebsocket(status, url) {
     //let wsConnection = new WebSocket('ws://192.168.55.251:8088/'); // my dummy test
     //let wsConnection = new WebSocket('ws://www1.igi.cnr.it:8088/'); // my dummy test
     //let wsConnection = new WebSocket('ws://www1.igi.cnr.it:8081/');
+
+    var allEvents = status.WS_EVENTS;
+    var myNode = document.getElementById("wslist");
+    for (var i=0; i<allEvents.length; i++) {
+	var nm = allEvents[i].name;
+	console.log(nm);
+        var item = ons.createElement(
+            '<ons-list-item>' +  
+                '<div align="left">' +
+	          nm +
+                '</div>' +
+                '<div align="left" id="' + nm + "EventListOutput" + '">' +
+                '</div>' +
+            '</ons-list-item>'
+        );
+        myNode.appendChild(item);
+    }
+   
     let wsConnection = new WebSocket('ws://' + url);
     wsConnection.onopen = function(event) {
 	//console.log("onopen");
@@ -47,9 +65,11 @@ function startWebsocket(url) {
     wsConnection.onmessage = function(event) {
 	//console.log("onmessage");
 	
+
+	// general log line - probably to remove
 	if (document.getElementById("wsoutput")==null)
 	    return;
-	str = event.data;
+	var str = event.data;
 	theNumber = parseInt(str.match(/\d+/));
 	document.getElementById("wsoutput").innerHTML = str;
 	if (theNumber % 2) {
@@ -57,6 +77,16 @@ function startWebsocket(url) {
 	} else {
 	    document.getElementById("wsoutput").style = "background-color:Red;";
 	}
+
+
+	// specific log lines
+        var allEvents = status.WS_EVENTS;
+        for (var i=0; i<allEvents.length; i++) {
+	    if (str.includes(allEvents[i])) {
+		document.getElementById(allEvents[i].name + "EventListOutput").innerText = str;
+	    }
+	}
+
     };
 }
 
@@ -336,7 +366,7 @@ function connectToMdsplusButtonClicked() {
         //ons.notification.alert("got " + x); return x; 
 	//messageLogWindow(x);
 
-	startWebsocket(status.serverIpMdsIpRest);
+	startWebsocket(status, status.serverIpMdsIpRest);
 
 	updateLabels();
     });
