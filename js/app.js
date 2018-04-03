@@ -36,7 +36,7 @@ function startWebsocket(status, url) {
     var myNode = document.getElementById("wslist");
     for (var i=0; i<allEvents.length; i++) {
 	var nm = allEvents[i].name;
-	console.log(nm);
+	//console.log(nm);
         var item = ons.createElement(
             '<ons-list-item>' +  
                 '<div align="left">' +
@@ -223,7 +223,9 @@ function treeCallback(key) {
 	    //console.log("getInfoOfNid-callback: " + (Date.now() - time1) + "ms");
 
 	    if (!status.hasSubTree(key)) {
-		ons.notification.alert(infoStr); 
+		if (ons.platform.isAndroid() || ons.platform.isIOS()) {
+		    ons.notification.alert(infoStr); 
+		}
 	    }
 	    //showDetails(infoStr);
             //document.getElementById('detailsShowLabel').innerText = infoStr;
