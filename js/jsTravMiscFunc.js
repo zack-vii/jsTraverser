@@ -33,7 +33,10 @@ function trimQuotesSpaces(str) {
 function convertArrayAsStrToArrayOfStr(str) {
     // input string ['str1','str2',...]
     //console.log(str);
-    return str.substring(1, str.length-1).split(',');
+    if (str.charAt(0) == '[' && str.charAt(str.length - 1) == ']') {
+	return str.substring(1, str.length-1).split(',');
+    }
+    return ([]);
 }
 
 
@@ -46,6 +49,18 @@ function convertArrayAsStrToArrayOfInt(str) {
     }
     return data;
 }
+
+
+function convertArrayAsStrToArrayOfFloat(str) {
+    // input string ['1','2',...]
+    var data = [];
+    var strAus1 = convertArrayAsStrToArrayOfStr(str);
+    for (var i=0; i<strAus1.length; i++) {
+	data[i] = parseFloat(strAus1[i]);
+    }
+    return data;
+}
+
 
 function convertArrayOfIntToStr(x) {
     // input: an array, returns a string "[1,2,...]"

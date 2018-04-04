@@ -24,6 +24,7 @@ window.myApp = {};
 let status = new Status();
 let statusOld = null;
 let connection = new Connection();
+let theChart = null;
 
 let wsConnection = null;
 
@@ -173,13 +174,40 @@ function mergeData(s1, s2) {
     return (s1.slice(0, -1) + "," + s2.slice(1));
 }
 
+function buildDataOfArray(label, arrayData) {
+    var datum = [];
+    for (let i=0; i<arrayData.length; i++) {
+	datum.push({ x: i, y: arrayData[i], series: 0});
+    }
+
+    aus = [ {key: label, values: datum } ];
+    //console.log(aus);
+    return aus;
+}
+
+function graphUpdate(label, respData) {
+    //console.log(respData);
+    var arrayData = convertArrayAsStrToArrayOfFloat(respData);
+    //console.log(arrayData);
+
+    if (arrayData.length > 0) {
+	d3.select('#chart2 svg')
+	    .datum(buildDataOfArray(label, arrayData))
+	    .transition().duration(500)
+	    .call(theChart);
+    }
+}
+
 
 function getNodeValue(flag, infoStr, theFullPath, callBackF) {
     var newInfoStr = infoStr;
 
     if (theFullPath.length > 0) {
 	getFullPathValue(status, connection, theFullPath, function (resp) { 
-		return callBackF(flag, '<div style="margin-left: 10px; word-break: break-all; word-wrap: break-word; background-color: LawnGreen;">VALUE: <b>' + resp.data + '</b></div>' + infoStr); 
+	        // if the value resp.data is an array
+	        graphUpdate("", resp.data);
+		var showRespData = (resp.data.length>128)?(resp.data.substring(0,128) + " ..."):resp.data;
+		return callBackF(flag, '<div style="margin-left: 10px; word-break: break-all; word-wrap: break-word; background-color: LawnGreen;">VALUE: <b>' + showRespData + '</b></div>' + infoStr); 
 	    });
     } else {
         newInfoStr = '<div style="margin-left: 10px; word-break: break-all; word-wrap: break-word; background-color: LawnGreen;">VALUE: <b>-</b></div>' + infoStr;
@@ -459,15 +487,15 @@ function stream_index(d, i) {
 }
 
 
-
-function testData() {
-    return stream_layers(3,128,.1).map(function(data, i) {
-	    return { 
-		key: 'Stream' + i,
-		    values: data
-		    };
-	});
-}
+//function testData() {
+//    var aus = stream_layers(3,128,.1).map(function(data, i) {
+//	    return { 
+//		key: 'Stream' + i,
+//		    values: data
+//		    };
+//	});
+//    return aus;
+//}
 
 //Pie chart example data. Note how there is only a single array of key-value pairs.
 function exampleData() {
@@ -551,6 +579,7 @@ document.addEventListener('init', function(event) {
       */
       nv.addGraph(function() {
 	      var chart = nv.models.lineWithFocusChart();
+	      theChart = chart;
 
   chart.xAxis
       .tickFormat(d3.format(',f'));
@@ -561,20 +590,15 @@ document.addEventListener('init', function(event) {
   chart.y2Axis
       .tickFormat(d3.format(',.2f'));
 
-  d3.select('#chart2 svg')
-      .datum(testData())
-      .transition().duration(500)
-      .call(chart);
+  //  d3.select('#chart2 svg')
+  //    .datum(testData())
+  //    .transition().duration(500)
+  //    .call(chart);
 
   nv.utils.windowResize(chart.update);
 
   return chart;
 	  });
-
-
-
-
-
 
   }
 
