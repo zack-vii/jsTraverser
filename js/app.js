@@ -577,28 +577,25 @@ document.addEventListener('init', function(event) {
 	      return chart;
 	  });
       */
+
       nv.addGraph(function() {
-	      var chart = nv.models.lineWithFocusChart();
-	      theChart = chart;
+          var chart = nv.models.lineWithFocusChart();
+	  //var chart = nv.models.lineChart();
+	  theChart = chart;
+	  
+	  // used with lineWithFocusChart()
+	  chart.xAxis.tickFormat(d3.format(',f'));
+	  chart.yAxis.tickFormat(d3.format(',.2f'));
+	  chart.y2Axis.tickFormat(d3.format(',.2f'));
 
-  chart.xAxis
-      .tickFormat(d3.format(',f'));
+          //  d3.select('#chart2 svg')
+          //    .datum(testData())
+          //    .transition().duration(500)
+          //    .call(chart);
 
-  chart.yAxis
-      .tickFormat(d3.format(',.2f'));
-
-  chart.y2Axis
-      .tickFormat(d3.format(',.2f'));
-
-  //  d3.select('#chart2 svg')
-  //    .datum(testData())
-  //    .transition().duration(500)
-  //    .call(chart);
-
-  nv.utils.windowResize(chart.update);
-
-  return chart;
-	  });
+          nv.utils.windowResize(chart.update);
+          return chart;
+      });
 
   }
 
