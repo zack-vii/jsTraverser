@@ -173,17 +173,36 @@ function mergeData(s1, s2) {
     return (s1.slice(0, -1) + "," + s2.slice(1));
 }
 
+
+function getNodeValue(flag, infoStr, theFullPath, callBackF) {
+    var newInfoStr = infoStr;
+
+    if (theFullPath.length > 0) {
+	getFullPathValue(status, connection, theFullPath, function (resp) { 
+		return callBackF(flag, '<div style="margin-left: 10px; word-break: break-all; word-wrap: break-word; background-color: LawnGreen;">VALUE: <b>' + resp.data + '</b></div>' + infoStr); 
+	    });
+    } else {
+        newInfoStr = '<div style="margin-left: 10px; word-break: break-all; word-wrap: break-word; background-color: LawnGreen;">VALUE: <b>-</b></div>' + infoStr;
+        callBackF(flag, newInfoStr);
+    }
+}
+
 function getInfoOfNid(status, nid, callBackF) {
     var infoStr = "NO INFO FOR " + nid;
     var infos = status.getNodeFromNid(status.currentTreeData, nid);
+    var theFullPath = "";
     if (infos) {
         infoStr = "";
         for (let [key, value] of Object.entries(infos)) {
 	    if (key.toString() != 'children') {
-		//if (key.toString() == 'fullpath') {
-		//    value = trimQuotesSpaces(value).replace(/:/g, " : ").replace(/\./g," . ");
-		//}
 		value = trimQuotesSpaces(value);
+
+		if (key.toString() == 'fullpath') {
+		    //value = trimQuotesSpaces(value).replace(/:/g, " : ").replace(/\./g," . ");
+		    theFullPath = value;
+		    //console.log(theFullPath);
+		}
+
 	        infoStr = infoStr + '<div style="margin-left: 10px; word-break: break-all; word-wrap: break-word;">' + key + ": <b>" + value + "</b></div>";
 	    }
         }
@@ -199,11 +218,11 @@ function getInfoOfNid(status, nid, callBackF) {
 	    completeNodeInfos(status, connection, nidsArray, Status.treeLabelsReturningArray, function (x) {
 		    messageShow("Subtree loaded.", "OK");
 		    //updateTreeAll();
-		    callBackF(true, infoStr);
+		    getNodeValue(true, infoStr, theFullPath, callBackF);
 		});
 	});
     } else {
-        callBackF(false, infoStr);
+        getNodeValue(false, infoStr, theFullPath, callBackF);
     }
 }
 

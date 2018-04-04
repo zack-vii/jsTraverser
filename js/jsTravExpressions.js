@@ -71,3 +71,9 @@ function getAttribute(status, connection, nidsArray, what, callBackF) {
 	});
 }
 
+function getFullPathValue(status, connection, theFullPath, callBackF) {
+    status.expressionToEvaluate = theFullPath;
+    connection.evalExpr(status, status.expressionToEvaluate, function (resp) {
+	    callBackF(resp);
+	});
+}
