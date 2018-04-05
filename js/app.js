@@ -180,6 +180,14 @@ function buildDataOfArray(label, arrayData) {
 	datum.push({ x: i, y: arrayData[i], series: 0});
     }
 
+    datum = simplifyPath(datum, null); // null means that function will autodefine tolerance
+    // no application: from 29901 to 29901 points, 5756ms
+    // tolerance 0.1   from 29901 to    29 points, 143ms
+    // tolerance 0.05  from 29901 to    66 points, 155ms
+    // tolerance 0.01  from 29901 to   397 points, 238ms
+    // tolerance 0.005 from 29901 to   770 points, 335ms GOOD!
+    // tolerance 0.001 from 29901 to  2865 points, 819ms
+
     aus = [ {key: label, values: datum } ];
     //console.log(aus);
     return aus;
@@ -191,8 +199,15 @@ function graphUpdate(label, respData) {
     //console.log(arrayData);
 
     if (arrayData.length > 0) {
+        var time1 = Date.now();
 	d3.select('#chart2 svg')
 	    .datum(buildDataOfArray(label, arrayData))
+	    .transition().duration(500)
+	    .call(theChart);
+	console.log("buildDataOfArray: " + (Date.now() - time1) + "ms");
+    } else {
+	d3.select('#chart2 svg')
+	    .datum([])
 	    .transition().duration(500)
 	    .call(theChart);
     }
