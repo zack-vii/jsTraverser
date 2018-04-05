@@ -246,7 +246,9 @@ function getInfoOfNid(status, nid, callBackF) {
 		    //console.log(theFullPath);
 		}
 
-	        infoStr = infoStr + '<div style="margin-left: 10px; word-break: break-all; word-wrap: break-word;">' + key + ": <b>" + value + "</b></div>";
+		if ( ! [ 'type', 'number_of_children', 'number_of_members', 'isOpen'].includes(key.toString())) {
+		    infoStr = infoStr + '<div style="margin-left: 10px; word-break: break-all; word-wrap: break-word;">' + key + ": <b>" + value + "</b></div>";
+		}
 	    }
         }
     }
