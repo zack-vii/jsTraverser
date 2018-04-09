@@ -77,3 +77,11 @@ function getFullPathValue(status, connection, theFullPath, callBackF) {
 	    callBackF(resp);
 	});
 }
+
+
+function registerEvents(status, connection, eventList) {
+    registerEventNameList = eventList.map(function(x) { return("register?event="+x.name); });
+    console.log("registerEvents: " + registerEventNameList);
+    connection.evalQueryMulti(status, registerEventNameList, function(x) { return null; });
+
+}

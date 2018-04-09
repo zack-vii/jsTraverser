@@ -42,12 +42,21 @@ class Connection {
 	xhr.send();
     }
 
+    evalQueryMulti(status, requests, callbackF) {
+        status.queryToEvaluate = requests.shift();
+	this.internalQuery(status, status.queryToEvaluate, function (resp) {
+	    status.evaluatedExpression = resp.data;
+	    if (requests.length > 0) {
+		connection.evalQueryMulti(status, requests, callbackF);
+	    } else {
+		callbackF("OK");
+	    }		
+	});
+    }
+
     evalExpr(status, expr, callBackF) {
-	//console.log(status.expressionToEvaluate);
-		var queryStr = "eval?expr=" + encodeURIComponent(expr) + 
-		    //var queryStr = "eval?expr=" + status.expressionToEvaluate + 
+	var queryStr = "eval?expr=" + encodeURIComponent(expr) + 
                        "&idx=" + status.connectionId;	
-		//console.log(queryStr);
 	this.internalQuery(status, queryStr, callBackF);
     }
 

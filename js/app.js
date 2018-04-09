@@ -50,6 +50,9 @@ function startWebsocket(status, url) {
         myNode.appendChild(item);
     }
    
+    // register all events
+    registerEvents(status, connection, allEvents);
+
     let wsConnection = new WebSocket('ws://' + url);
     wsConnection.onopen = function(event) {
 	//console.log("onopen");
