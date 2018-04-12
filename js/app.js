@@ -574,6 +574,7 @@ document.addEventListener('init', function(event) {
 
 
   if (page.id === 'detailsPage') {
+      initActions(status);
       updateLabels();	  
 
       // https://codepen.io/anon/pen/yeqMEJ

@@ -104,6 +104,27 @@ class Status {
 			   { name: "Event2" },
 			   { name: "Event3" } 
 			 ];
+
+	// if all the actions are like this, then the global status color is setted
+	this.ACTIONS_GLOBAL_COLOR_OK = "GreenYellow";
+	this.ACTIONS_GLOBAL_COLOR_KO = "LightGrey";
+
+	this.ACTIONS_STATUS = [ { name: "DISPATCHED", color: "Yellow" },
+				{ name: "DOING",      color: "Orange" },
+				{ name: "DONE",       color: "GreenYellow" },
+			      ];
+	this.ACTIONS_SUBACTIONS = [
+				  "INIT",
+				  "RUN",
+				  "STORE",
+		                 ];
+	this.ACTIONS = [
+			"DEV1",
+			"DEV2",
+			"DEV3",
+			"DEV4",
+		       ];
+
     }
 
 

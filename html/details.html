@@ -3,9 +3,19 @@
     <span id="messageShowLabel" class="toolbar-button toolbar-button--outline" style="background-color: Yellow;">NOT CONNECTED</span>
     <hr>
 
-    <span style="margin: 10px;">WS:&nbsp;</span><span id="wsoutput" style="margin: 10px;">event</span>
+
+    <div style="margin: 4px; border-style: solid; border-width: thin; border-color: coral;">
+    <span style="margin: 10px;">Actions' Global Status:&nbsp;</span><div id="actionsGlobalStatusOutput" style="display:inline-block; margin: 10px; width:100px; background-color: grey;">&nbsp;</div>
+    <ons-list id="actionslist">
+    </ons-list>
+    </div>
+
+
+    <div style="margin: 4px; border-style: solid; border-width: thin; border-color: coral;">
+    <span style="margin: 10px;">EVENTS:&nbsp;</span><span id="wsoutput" style="margin: 10px;"></span>
     <ons-list id="wslist">
     </ons-list>
+    </div>
 
     <hr>
     <span id="detailsShowLabel" style="margin: 10px;">DETAILS</span>
