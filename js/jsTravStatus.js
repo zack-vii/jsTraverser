@@ -119,6 +119,7 @@ class Status {
 				  "STORE",
 		                 ];
 	this.ACTIONS = [
+			"",     // first action always ""
 			"DEV1",
 			"DEV2",
 			"DEV3",

@@ -27,7 +27,13 @@ function initActions(status) {
 
     var myNode = document.getElementById("actionslist");
 
-    actions.unshift(""); // add an emtpy action - a header line
+    //console.log(myNode.childNodes);
+    while (myNode.hasChildNodes()) {
+        myNode.removeChild(myNode.lastChild);
+    }
+
+
+    //actions.unshift(""); // add an emtpy action - a header line
     
     var width = ((100 / (actionsSubactions.length + 1))-2).toString() + "%";
     var color = actionsStatus[actionsStatus.length-1].color;
