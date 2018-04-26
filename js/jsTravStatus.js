@@ -89,12 +89,12 @@ class Status {
 	//this.doingUpdate = true;
 	//this.internalServerIpMdsIpRest = "localhost:8081";
         //this.internalServerIpMdsIpRest = "portal.igi.cnr.it/mdsipRest";
-	this.internalServerIpMdsIpRest = "www1.igi.cnr.it:8081";
-	this.internalServerIpMdsplus = "roserver.igi.cnr.it:8000";
+	this.internalServerIpMdsIpRest = "mds-data-1:8081";
+	this.internalServerIpMdsplus = "mds-data-1:8000";
 	this.internalConnectionId = -1; // -1 is no connection
 	this.internalExpressionToEvaluate = "2+$PI"; // "2%2B$PI"
 	this.internalEvaluatedExpression = "";
-	this.internalTreeName = "RFX"; // "test";
+	this.internalTreeName = "W7X"; // "test";
         this.internalShotNumber = -1;
         this.internalCurrentDetails ="DETAILS";
 	this.internalCurrentTreeData = this.buildDummyTree(0);
